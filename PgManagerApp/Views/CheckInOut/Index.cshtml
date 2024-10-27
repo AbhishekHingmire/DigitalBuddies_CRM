@@ -1,0 +1,163 @@
+﻿<div class="container mt-4">
+    <h4>Check In Check Out</h4>
+    <div class="card">
+        <div class="card-body">
+            <form id="checkInForm">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="employeeName">Employee Name</label>
+                        <select class="form-control" id="employeeName" required>
+                            <option value="">Select Employee</option>
+                            <option value="1">John Doe</option>
+                            <option value="2">Jane Smith</option>
+                            <option value="3">Alice Johnson</option>
+                            <!-- Add more employee options as needed -->
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="currentDate">Current Date</label>
+                        <input type="date" class="form-control" id="currentDate" readonly>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="checkInTime">Check In Time</label>
+                        <input type="time" class="form-control" id="checkInTime" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="checkOutTime">Check Out Time</label>
+                        <input type="time" class="form-control" id="checkOutTime" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Record</button>
+            </form>
+            <hr>
+            <div class="table-responsive">
+                <table class="table table-bordered mt-3" id="checkInOutTable">
+                    <thead>
+                        <tr>
+                            <th class="bg-primary text-white">Emp ID</th>
+                            <th class="bg-primary text-white">Employee Name</th>
+                            <th class="bg-primary text-white">Designation</th>
+                            <th class="bg-primary text-white">Date</th>
+                            <th class="bg-primary text-white">Check In</th>
+                            <th class="bg-primary text-white">Check Out</th>
+                            <th class="bg-primary text-white">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="checkInOutData">
+                        <tr>
+                            <td>EMP001</td>
+                            <td>EMP001</td>
+                            <td>EMP001</td>
+                            <td>EMP001</td>
+                            <td>EMP001</td>
+                            <td>EMP001</td>
+                            <td>EMP001</td>
+                        </tr>
+                        <tr>
+                            <td>EMP001</td>
+                            <td>EMP001</td>
+                            <td>EMP001</td>
+                            <td>EMP001</td>
+                            <td>EMP001</td>
+                            <td>EMP001</td>
+                            <td>EMP001</td>
+                        </tr>
+                        <tr>
+                            <td>EMP001</td>
+                            <td>EMP001</td>
+                            <td>EMP001</td>
+                            <td>EMP001</td>
+                            <td>EMP001</td>
+                            <td>EMP001</td>
+                            <td>EMP001</td>
+                        </tr>
+                        <tr>
+                            <td>EMP001</td>
+                            <td>EMP001</td>
+                            <td>EMP001</td>
+                            <td>EMP001</td>
+                            <td>EMP001</td>
+                            <td>EMP001</td>
+                            <td>EMP001</td>
+                        </tr>
+                        <tr>
+                            <td>EMP001</td>
+                            <td>EMP001</td>
+                            <td>EMP001</td>
+                            <td>EMP001</td>
+                            <td>EMP001</td>
+                            <td>EMP001</td>
+                            <td>EMP001</td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Include jQuery and Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Set the current date
+        const today = new Date().toISOString().split('T')[0];
+        $('#currentDate').val(today);
+
+        // Handle form submission
+        $('#checkInForm').submit(function (event) {
+            event.preventDefault();
+
+            const empId = $('#employeeName').val();
+            const empName = $('#employeeName option:selected').text();
+            const designation = "Employee"; // You can replace it with the actual designation
+            const date = $('#currentDate').val();
+            const checkIn = $('#checkInTime').val();
+            const checkOut = $('#checkOutTime').val();
+
+            // Append data to the table
+            $('#checkInOutData').append(`
+                <tr>
+                    <td>${empId}</td>
+                    <td>${empName}</td>
+                    <td>${designation}</td>
+                    <td>${date}</td>
+                    <td>${checkIn}</td>
+                    <td>${checkOut}</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm edit-btn">Edit</button>
+                        <button class="btn btn-danger btn-sm delete-btn">Delete</button>
+                    </td>
+                </tr>
+            `);
+
+            // Reset the form
+            $('#checkInForm')[0].reset();
+            $('#currentDate').val(today); // Reset date to today
+        });
+
+        // Handle delete button click
+        $(document).on('click', '.delete-btn', function () {
+            $(this).closest('tr').remove();
+        });
+
+        // Handle edit button click (You can add more functionality here)
+        $(document).on('click', '.edit-btn', function () {
+            alert('Edit functionality not implemented yet.');
+        });
+    });
+</script>
+
+<style>
+    .card {
+        background-color: white; /* Card background color */
+    }
+
+    .table th, .table td {
+        text-align: center; /* Center align table content */
+    }
+</style>

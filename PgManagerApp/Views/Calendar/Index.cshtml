@@ -1,0 +1,158 @@
+﻿<div class="container mt-5 mb-3">
+    <h2 class="text-center" id="currentMonth"></h2>
+    <div class="container-fluid">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="d-flex justify-content-center" id="daysOfWeek">
+                        <div class="day-header">Sun</div>
+                        <div class="day-header">Mon</div>
+                        <div class="day-header">Tue</div>
+                        <div class="day-header">Wed</div>
+                        <div class="day-header">Thu</div>
+                        <div class="day-header">Fri</div>
+                        <div class="day-header">Sat</div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="row" id="calendarDays"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Adding Events -->
+<div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="eventModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="eventModalLabel">Add Event</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="eventForm">
+                    <div class="form-group">
+                        <label for="eventTitle">Event Title</label>
+                        <input type="text" class="form-control" id="eventTitle" required>
+                    </div>
+                    <input type="hidden" id="eventDate">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveEvent">Save Event</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Include jQuery, Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Get current month and year
+        const date = new Date();
+        const currentMonth = date.toLocaleString('default', { month: 'long' });
+        const year = date.getFullYear();
+        const today = date.getDate(); // Get today's date
+
+        // Set current month header
+        $('#currentMonth').text(`${currentMonth} ${year}`);
+
+        // Get the first day of the month and number of days in the month
+        const firstDay = new Date(year, date.getMonth(), 1).getDay();
+        const daysInMonth = new Date(year, date.getMonth() + 1, 0).getDate();
+
+        // Store events in an object
+        const events = {};
+
+        // Generate the calendar
+        let calendarDaysHtml = '';
+        for (let i = 0; i < firstDay; i++) {
+            calendarDaysHtml += '<div class="col-1"></div>'; // Empty cells before the first day
+        }
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dayClass = (new Date(year, date.getMonth(), day).getDay() === 0) ? 'sunday' : '';
+            const currentClass = (day === today) ? 'current-date' : '';
+            calendarDaysHtml += `<div class="col-1"><button class="btn calendar-btn ${dayClass} ${currentClass}" onclick="openEventModal('${day}')">${day}</button></div>`;
+            events[day] = []; // Initialize an empty array for each day
+        }
+        $('#calendarDays').html(calendarDaysHtml);
+
+        // Save event when save button is clicked
+        $('#saveEvent').click(function () {
+            const title = $('#eventTitle').val();
+            const day = $('#eventDate').val();
+
+            // Add event title to the respective date button
+            if (title) {
+                $(`button:contains(${day})`).html(`${day}
+    <br><span style="color: blue;">${title}</span>`).css('background-color', 'white');
+                events[day].push(title); // Store the event
+            }
+
+            $('#eventModal').modal('hide');
+            $('#eventForm')[0].reset(); // Reset the form
+        });
+    });
+
+    // Function to open event modal
+    function openEventModal(day) {
+        $('#eventDate').val(day);
+        $('#eventModal').modal('show');
+    }
+</script>
+
+<style>
+    #daysOfWeek {
+        margin-bottom: 10px;
+    }
+
+    .day-header {
+        flex: 1;
+        text-align: center;
+        font-weight: bold;
+        color: #fff;
+        background-color: #007bff;
+        padding: 10px;
+        border-radius: 5px;
+        margin: 0;
+    }
+
+    #calendarDays {
+        display: flex;
+        flex-wrap: wrap;
+        border-radius: 5px;
+    }
+
+    .col-1 {
+        flex: 0 0 14.28%; /* 7 days in a week */
+        text-align: center;
+        padding: 0; /* Remove padding for gapless layout */
+    }
+
+    .calendar-btn {
+        width: 100%;
+        height: 80px; /* Fixed height for uniformity */
+        border-radius: 0; /* Remove border radius for gapless look */
+        border: 1px solid #ddd; /* Border around buttons */
+        transition: background-color 0.3s;
+        background-color: white; /* Default background color */
+    }
+
+        .calendar-btn:hover {
+            background-color: #f0f0f0; /* Change background color on hover */
+        }
+
+    .sunday {
+        color: red; /* Highlight Sundays in red */
+    }
+
+    .current-date {
+        background-color: lightgray; /* Highlight the current date */
+    }
+</style>

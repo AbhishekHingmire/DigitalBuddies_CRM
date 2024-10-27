@@ -13,7 +13,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>PG Manager - Dashboard</title>
+    <title>Digital Buddiess - Dashboard</title>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -41,10 +41,9 @@
 
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand d-flex align-items-center justify-content-center" href="~/Dashboard">
-                <div class="sidebar-brand-icon rotate-n-15">
-                    <i class="fas fa-laugh-wink"></i>
-                </div>
-                <div class="sidebar-brand-text mx-3">PG Manager</div>
+                    <img class="rounded mt-4 mb-2" src="~/images/profiles/DigitalLogoo.png" style="width: 150px; height: 70px;"> <!-- Adjust the size as needed -->
+
+                @* <div class="sidebar-brand-text mx-3">Digital Buddiess</div> *@
             </a>
 
             <!-- Divider -->
@@ -57,10 +56,8 @@
                     <span>Dashboard</span>
                 </a>
             </li>
-
             <!-- Divider -->
-            <hr class="sidebar-divider" />
-
+            <hr class="sidebar-divider my-0 bg-white" />
             <!-- Nav Item - Pages Collapse Menu -->
             <li class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "EmployeeDirectory" ? "active" : "collapsed")">
                 <a class="nav-link collapsed" href="~/EmployeeDirectory">
@@ -86,47 +83,27 @@
             </li>
 
             <!-- Nav Item - Utilities Collapse Menu -->
-            <li class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Room" ? "active" : "collapsed")">
-                <a class="nav-link collapsed" href="~/Room">
+            <li class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "CheckInOut" ? "active" : "collapsed")">
+                <a class="nav-link collapsed" href="~/CheckInOut">
                     <i class="fas fa-house-user"></i>
                     <span>CheckIn-CheckOut</span>
                 </a>
             </li>
 
             <!-- Nav Item - Utilities Collapse Menu -->
-            <li class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Transaction" ? "active" : "collapsed")">
-                <a class="nav-link collapsed" href="~/Transaction">
-                    <i class="fas fa-rupee-sign"></i>
-                    <span>Holiday List</span>
-                </a>
-            </li>
-
-
-            <span>User</span>
-            <!-- Nav Item - Utilities Collapse Menu -->
-            <li class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "PaymentReminder" ? "active" : "collapsed")">
-                <a class="nav-link collapsed d-flex align-items-center" href="~/PaymentReminder">
-                    <i class="fas fa-bell mr-2"></i>
-                    <span>Task Detail</span>
-
-                    @{
-                        int? count;
-                        if (Cache.TryGetValue("PendingCounter", out count) && count > 0)
-                        {
-                            <span class="badge bg-danger text-white ml-1" style="font-size:0.7rem;">@count</span>
-                        }
-                    }
-                </a>
-            </li>
-
-
-            <!-- Nav Item - Utilities Collapse Menu -->
-            <li class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Invoice" ? "active" : "collapsed")">
-                <a class="nav-link collapsed" href="~/Invoice">
+            <li class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "TimeSheet" ? "active" : "collapsed")">
+                <a class="nav-link collapsed" href="~/TimeSheet">
                     <i class="fas fa-file-invoice"></i>
                     <span>Time Sheet</span>
                 </a>
             </li>
+            <li class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Calendar" ? "active" : "collapsed")">
+                <a class="nav-link collapsed" href="~/Calendar">
+                    <i class="fas fa-file-invoice"></i>
+                    <span>Calendar</span>
+                </a>
+            </li>
+
 
             <!-- Divider -->
             <hr class="sidebar-divider" />
@@ -234,10 +211,10 @@
             </div>
             <!-- End of Main Content -->
             <!-- Footer -->
-            <footer class="sticky-footer bg-white">
+            <footer class="sticky-footer bg-white mt-4">
                 <div class="container my-auto">
                     <div class="copyright text-center my-auto">
-                        <span>Copyright PgManager &copy; Design & Dev By ABHISHEK - 2024</span>
+                        <span>Copyright DIGITAL BUDDIESS &copy; Design & Dev By NEXIFORM - 2024</span>
                     </div>
                 </div>
             </footer>
@@ -291,37 +268,3 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
-<script>
-    function updatePendingCount() {
-        $.ajax({
-            url: '@Url.Action("PendingCountService", "PaymentReminder")',
-            type: 'GET',
-            success: function (count) {
-                
-            },
-            error: function () {
-                
-            }
-        });
-    }
-    
-
-
-    function updatePendingUserRequestCount() {
-        $.ajax({
-            url: '@Url.Action("UserApprovalCountService", "UsersApproval")',
-            type: 'GET',
-            success: function (count) {
-
-            },
-            error: function () {
-
-            }
-        });
-    }
-
-    updatePendingCount();
-    updatePendingUserRequestCount();
-
-    
-</script>

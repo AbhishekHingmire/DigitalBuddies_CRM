@@ -8,7 +8,7 @@ using System.Text.Json;
 
 namespace PgManagerApp.Controllers
 {
-    [Authorize]
+/*    [Authorize]*/
     public class DashboardController : Controller
     {
         private readonly ILogger<DashboardController> _logger;
