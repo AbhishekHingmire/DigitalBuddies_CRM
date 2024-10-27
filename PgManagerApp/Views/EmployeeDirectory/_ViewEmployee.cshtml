@@ -1,0 +1,20 @@
+﻿@model UserRegistration
+
+<div class="container" style="font-size: 1rem;">
+    <div class="row">
+        <div class="col-12">
+            <p><strong>Id:</strong> @Model.Id</p>
+            <p><strong>Name:</strong> @Model.Name</p>
+            <p><strong>Email:</strong> @Model.Email</p>
+            <p><strong>Designation:</strong> @Model.Designation</p>
+            <p><strong>Mobile Number:</strong> @Model.MobileNumber</p>
+            <p><strong>Salary:</strong> @Model.Salary</p>
+            <p><strong>Onboard Date:</strong> @Model.OnboardDate</p>
+            <p><strong>Identity Type:</strong> @Model.IdentityType</p>
+            <p><strong>Identity Number:</strong> @Model.IdentityNumber</p>
+            <p><strong>Address:</strong> @Model.Address</p>
+            <p><strong>Profile Picture:</strong></p>
+            <img src="@Model.ProfilePicturePath" alt="Profile Picture" style="max-width: 100px;" />
+        </div>
+    </div>
+</div>

@@ -1,0 +1,167 @@
+﻿@model IEnumerable<UserRegistration>
+
+<div class="container">
+    <h2 class="small">Employee Directory</h2>
+
+    <!-- Button to open modal for adding an employee -->
+    <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addEmployeeModal">
+        Add Employee
+    </button>
+
+    <!-- Employee table -->
+    <table class="table table-striped table-sm mt-3" style="font-size: 1;">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Designation</th>
+                <th>Mobile Number</th>
+                <th>Salary</th>
+                <th>Onboard Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var employee in Model)
+            {
+                <tr>
+                    <td>@employee.Id</td>
+                    <td>@employee.Name</td>
+                    <td>@employee.Email</td>
+                    <td>@employee.Designation</td>
+                    <td>@employee.MobileNumber</td>
+                    <td>@employee.Salary</td>
+                    <td>@employee.OnboardDate</td>
+                    <td>
+                        <button class="btn btn-info btn-sm" onclick="viewEmployee(@employee.Id)">View</button>
+                        <button class="btn btn-warning btn-sm" onclick="editEmployee(@employee.Id)">Update</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteEmployee(@employee.Id)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal for adding an employee -->
+<div class="modal fade" id="addEmployeeModal" tabindex="-1" role="dialog" aria-labelledby="addEmployeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title small" id="addEmployeeModalLabel">Add New Employee</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="AddEmployee" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="Name" class="small">Name</label>
+                        <input type="text" class="form-control form-control-sm" id="Name" name="Name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="Email" class="small">Email</label>
+                        <input type="email" class="form-control form-control-sm" id="Email" name="Email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="Designation" class="small">Designation</label>
+                        <input type="text" class="form-control form-control-sm" id="Designation" name="Designation">
+                    </div>
+                    <div class="form-group">
+                        <label for="MobileNumber" class="small">Mobile Number</label>
+                        <input type="text" class="form-control form-control-sm" id="MobileNumber" name="MobileNumber" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="Salary" class="small">Salary</label>
+                        <input type="text" class="form-control form-control-sm" id="Salary" name="Salary" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="OnboardDate" class="small">Onboard Date</label>
+                        <input type="date" class="form-control form-control-sm" id="OnboardDate" name="OnboardDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="ProfilePicture" class="small">Profile Picture</label>
+                        <input type="file" class="form-control-file" id="ProfilePicture" name="ProfilePicture" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-sm">Add Employee</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for viewing employee details -->
+<div class="modal fade" id="viewEmployeeModal" tabindex="-1" role="dialog" aria-labelledby="viewEmployeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title small" id="viewEmployeeModalLabel">Employee Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="viewEmployeeBody" style="font-size: 1;">
+                <!-- Employee details will be loaded here via AJAX -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for editing employee details -->
+<div class="modal fade" id="editEmployeeModal" tabindex="-1" role="dialog" aria-labelledby="editEmployeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title small" id="editEmployeeModalLabel">Edit Employee</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="editEmployeeBody">
+                <!-- Edit form will be loaded here via AJAX -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function viewEmployee(id) {
+        $.get('/EmployeeDirectory/View/' + id, function (data) {
+            $('#viewEmployeeBody').html(data);
+            $('#viewEmployeeModal').modal('show');
+        });
+    }
+
+    function editEmployee(id) {
+        $.get('/EmployeeDirectory/Edit/' + id, function (data) {
+            $('#editEmployeeBody').html(data); // Load the partial view into the modal body
+            $('#editEmployeeModal').modal('show'); // Show the modal
+        });
+    }
+
+    function submitEditEmployeeForm() {
+        var formData = new FormData($('#editEmployeeForm')[0]); // Get the form data
+
+        $.ajax({
+            url: '/EmployeeDirectory/Edit', // The server-side URL for editing
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                $('#editEmployeeModal').modal('hide'); // Hide the modal
+                location.reload(); // Reload the page to show the updated data
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+            }
+        });
+    }
+
+    function deleteEmployee(id) {
+        if (confirm("Are you sure you want to delete this employee?")) {
+            window.location.href = '/EmployeeDirectory/Delete/' + id;
+        }
+    }
+</script>

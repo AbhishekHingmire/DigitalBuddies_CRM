@@ -29,6 +29,7 @@
 
     <!-- Custom styles for this template-->
     <link href="~/css/sb-admin-2.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
 </head>
 <body>
 
@@ -61,16 +62,16 @@
             <hr class="sidebar-divider" />
 
             <!-- Nav Item - Pages Collapse Menu -->
-            <li class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "User" ? "active" : "collapsed")">
-                <a class="nav-link collapsed" href="~/User">
+            <li class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "EmployeeDirectory" ? "active" : "collapsed")">
+                <a class="nav-link collapsed" href="~/EmployeeDirectory">
                     <i class="fas fa-user"></i>
                     <span>Employee Directory</span>
                 </a>
             </li>
 
             <!-- Nav Item - Utilities Collapse Menu -->
-            <li class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "UsersApproval" ? "active" : "collapsed")">
-                <a class="nav-link collapsed d-flex align-items-center" href="~/UsersApproval">
+            <li class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "TaskDetails" ? "active" : "collapsed")">
+                <a class="nav-link collapsed d-flex align-items-center" href="~/TaskDetails">
                     <i class="fas fa-check mr-2"></i>
                     <span>Task Details</span>
 

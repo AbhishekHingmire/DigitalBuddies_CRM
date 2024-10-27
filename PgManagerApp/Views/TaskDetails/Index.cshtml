@@ -1,0 +1,224 @@
+﻿@model PgManagerApp.Models.TaskDetails
+
+<style>
+    .kanban-board {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .kanban-column {
+        width: 32%;
+        padding: 1rem;
+        border-radius: 8px;
+        background: #fff; /* White background for columns */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .task-card {
+        background-color: #e0e0e0; /* Light grey background for tasks */
+        padding: 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .kanban-header {
+        font-weight: bold;
+        margin-bottom: 1rem;
+    }
+
+    .create-task-btn {
+        top: 20px;
+        right: 20px;
+    }
+</style>
+
+<!-- Begin Page Content -->
+<div class="container mt-4">
+    <div class="container mt-4 d-flex justify-content-between align-items-center">
+        <h2 class="text-center mb-0">Task Board</h2>
+        <button class="btn btn-primary create-task-btn" data-bs-toggle="modal" data-bs-target="#newTaskModal">
+            <i class="fas fa-plus"></i> Create Task
+        </button>
+    </div>
+    <br />
+    <div class="kanban-board">
+        <div class="kanban-column" id="todo">
+            <div class="kanban-header">To Do</div>
+            @foreach (var task in Model.Tasks.Where(t => t.Status == "todo"))
+            {
+                <div class="task-card" data-id="@task.Id" data-description="@task.TaskDescription" data-status="@task.Status" data-bs-toggle="modal" data-bs-target="#taskDetailsModal">@task.TaskDescription</div>
+            }
+        </div>
+        <div class="kanban-column" id="inprogress">
+            <div class="kanban-header">In Progress</div>
+            @foreach (var task in Model.Tasks.Where(t => t.Status == "inprogress"))
+            {
+                <div class="task-card" data-id="@task.Id" data-description="@task.TaskDescription" data-status="@task.Status" data-bs-toggle="modal" data-bs-target="#taskDetailsModal">@task.TaskDescription</div>
+            }
+        </div>
+        <div class="kanban-column" id="complete">
+            <div class="kanban-header">Complete</div>
+            @foreach (var task in Model.Tasks.Where(t => t.Status == "complete"))
+            {
+                <div class="task-card" data-id="@task.Id" data-description="@task.TaskDescription" data-status="@task.Status" data-bs-toggle="modal" data-bs-target="#taskDetailsModal">@task.TaskDescription</div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Creating New Task -->
+<div class="modal fade" id="newTaskModal" tabindex="-1" aria-labelledby="newTaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="newTaskModalLabel">Create New Task</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="newTaskForm" asp-action="CreateTask" enctype="multipart/form-data" method="post">
+                    <div class="mb-3">
+                        <label for="projectSelect" class="form-label">Project Name</label>
+                        <select class="form-select" id="projectSelect" name="ProjectId" asp-for="ProjectId" required>
+                            <option value="" disabled selected>Select a project</option>
+                            @foreach (var proj in ViewBag.Projects)
+                            {
+                                <option value="@proj.Id">@proj.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="assignedByInput" class="form-label">Assigned By</label>
+                        <input type="text" class="form-control" id="assignedByInput" name="AssignedBy" asp-for="AssignedBy" placeholder="Enter your name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="assignedToSelect" class="form-label">Assigned To (Name and Designation)</label>
+                        <select class="form-select" id="assignedToSelect" name="AssignedToId" asp-for="AssignedToId" required>
+                            <option value="" disabled selected>Select a user</option>
+                            @foreach (var user in ViewBag.Users)
+                            {
+                                <option value="@user.Id">@user.Name (@user.Designation)</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="taskDescriptionInput" class="form-label">Task Description</label>
+                        <textarea class="form-control" id="taskDescriptionInput" name="TaskDescription" asp-for="TaskDescription" rows="3" placeholder="Enter task description" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="uploadImageInput" class="form-label">Upload Image</label>
+                        <input type="file" class="form-control" id="uploadImageInput" asp-for="@Model.UploadImageFile" accept="image/*">
+                    </div>
+                    <div class="mb-3">
+                        <label for="uploadVideoInput" class="form-label">Upload Video</label>
+                        <input type="file" class="form-control" id="uploadVideoInput" asp-for="@Model.UploadVideoFile" accept="video/*">
+                    </div>
+                    <div class="mb-3">
+                        <label for="mediaDescriptionInput" class="form-label">Media Description</label>
+                        <textarea class="form-control" id="mediaDescriptionInput" name="MediaDescription" rows="2" placeholder="Enter description for uploaded media (optional)"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="prioritySelect" class="form-label">Select Priority</label>
+                        <select class="form-select" id="prioritySelect" name="Priority" asp-for="Priority" required>
+                            <option value="" disabled selected>Select priority</option>
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="statusSelect" class="form-label">Select Status</label>
+                        <select class="form-select" id="statusSelect" name="Status" asp-for="Status" required>
+                            <option value="" disabled selected>Select status</option>
+                            <option value="todo">To Do</option>
+                            <option value="inprogress">In Progress</option>
+                            <option value="complete">Complete</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="startDateInput" class="form-label">Start Date</label>
+                        <input type="date" class="form-control" id="startDateInput" name="StartDate" asp-for="StartDate" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="endDateInput" class="form-label">End Date</label>
+                        <input type="date" class="form-control" id="endDateInput" name="EndDate" asp-for="EndDate" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="commentsInput" class="form-label">Comments/Summary/Reference</label>
+                        <textarea class="form-control" id="commentsInput" name="Comments" asp-for="Comments" rows="3" placeholder="Enter comments or references"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save Task</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Viewing Task Details -->
+<div class="modal fade" id="taskDetailsModal" tabindex="-1" aria-labelledby="taskDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="taskDetailsModalLabel">Task Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="taskDetailsForm" asp-action="UpdateTask" method="post">
+                    <input type="hidden" id="taskId" name="Id" />
+                    <div class="mb-3">
+                        <label for="taskDescription" class="form-label">Task Description</label>
+                        <textarea class="form-control" id="taskDescription" name="TaskDescription" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="status" class="form-label">Status</label>
+                        <select class="form-select" id="status" name="Status" required>
+                            <option value="todo">To Do</option>
+                            <option value="inprogress">In Progress</option>
+                            <option value="complete">Complete</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="priority" class="form-label">Priority</label>
+                        <select class="form-select" id="priority" name="Priority" required>
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Update Task</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // JavaScript for populating the task details modal
+    document.addEventListener('DOMContentLoaded', function () {
+        const taskCards = document.querySelectorAll('.task-card');
+        taskCards.forEach(card => {
+            card.addEventListener('click', function () {
+                const taskId = this.getAttribute('data-id');
+                const taskDescription = this.getAttribute('data-description');
+                const taskStatus = this.getAttribute('data-status');
+
+                // Populate the modal fields
+                document.getElementById('taskId').value = taskId;
+                document.getElementById('taskDescription').value = taskDescription;
+                document.getElementById('status').value = taskStatus;
+
+                // Set priority based on task data if available
+                // Assuming priority is available as data attribute, otherwise set a default
+                const taskPriority = this.getAttribute('data-priority') || 'medium';
+                document.getElementById('priority').value = taskPriority;
+            });
+        });
+    });
+</script>

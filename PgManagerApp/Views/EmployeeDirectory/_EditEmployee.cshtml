@@ -1,0 +1,56 @@
+﻿@model UserRegistration
+
+<form asp-action="Edit" method="post" enctype="multipart/form-data" id="editEmployeeForm" style="font-size: 1rem;">
+    <input type="hidden" name="Id" value="@Model.Id" /> <!-- Hidden field for ID -->
+
+    <div class="form-group">
+        <label for="Name" class="small">Name</label>
+        <input type="text" class="form-control form-control-sm" id="Name" name="Name" value="@Model.Name" required>
+    </div>
+    <div class="form-group">
+        <label for="Email" class="small">Email</label>
+        <input type="email" class="form-control form-control-sm" id="Email" name="Email" value="@Model.Email" required>
+    </div>
+    <div class="form-group">
+        <label for="Designation" class="small">Designation</label>
+        <input type="text" class="form-control form-control-sm" id="Designation" name="Designation" value="@Model.Designation">
+    </div>
+    <div class="form-group">
+        <label for="MobileNumber" class="small">Mobile Number</label>
+        <input type="text" class="form-control form-control-sm" id="MobileNumber" name="MobileNumber" value="@Model.MobileNumber" required>
+    </div>
+    <div class="form-group">
+        <label for="Salary" class="small">Salary</label>
+        <input type="text" class="form-control form-control-sm" id="Salary" name="Salary" value="@Model.Salary" required>
+    </div>
+    <div class="form-group">
+        <label for="OnboardDate" class="small">Onboard Date</label>
+        <input type="date" class="form-control form-control-sm" id="OnboardDate" name="OnboardDate" value="@Model.OnboardDate">
+    </div>
+    <div class="form-group">
+        <label for="IdentityType" class="small">Identity Type</label>
+        <input type="text" class="form-control form-control-sm" id="IdentityType" name="IdentityType" value="@Model.IdentityType">
+    </div>
+    <div class="form-group">
+        <label for="IdentityNumber" class="small">Identity Number</label>
+        <input type="text" class="form-control form-control-sm" id="IdentityNumber" name="IdentityNumber" value="@Model.IdentityNumber">
+    </div>
+    <div class="form-group">
+        <label for="Address" class="small">Address</label>
+        <textarea class="form-control form-control-sm" id="Address" name="Address">@Model.Address</textarea>
+    </div>
+
+    <div class="form-group">
+        <label for="ProfilePicture" class="small">Profile Picture</label>
+        <input type="file" class="form-control-file" id="ProfilePicture" name="ProfilePicture">
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.ProfilePicturePath))
+    {
+        <div class="form-group">
+            <img src="@Url.Content("~/" + Model.ProfilePicturePath)" alt="Current Profile Picture" style="max-width: 100px; margin-top: 10px;" />
+        </div>
+    }
+
+    <button type="submit" class="btn btn-primary btn-sm" onclick="submitEditEmployeeForm(); return false;">Save Changes</button>
+</form>

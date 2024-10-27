@@ -110,42 +110,8 @@ namespace PgManagerApp.Controllers
         [HttpPost]
         public IActionResult DeleteAccount()
         {
-            if (HttpContext.Session.GetInt32("MasterUserId") != null && HttpContext.Session.GetString("Username") != null)
-            {
-                var master = _context.MasterUser.Where(x => x.Id == HttpContext.Session.GetInt32("MasterUserId")).FirstOrDefault();
-                if(master!=null)
-                _context.MasterUser.Remove(master);
-
-                var rooms = _context.Rooms.Where(x => x.Id == HttpContext.Session.GetInt32("MasterUserId")).ToList();
-                if (rooms.Count() > 0)
-                    foreach (var room in rooms)
-                {
-                    _context.Rooms.Remove(room);
-                }
-
-                var users = _context.Users.Where(x => x.Id == HttpContext.Session.GetInt32("MasterUserId")).ToList();
-                if (users.Count() > 0)
-                    foreach (var user in users)
-                {
-                    _context.Users.Remove(user);
-                }
-
-                var usrAppr = _context.UserApproval.Where(x => x.Id == HttpContext.Session.GetInt32("MasterUserId")).ToList();
-                if (usrAppr.Count() > 0)
-                    foreach (var usr in usrAppr)
-                {
-                    _context.UserApproval.Remove(usr);
-                }
-
-                _context.SaveChanges();
-                TempData["Message"] = "Account deleted succesfully!";
-            }
-            else
-            {
-                TempData["Error"] = "Something went wrong!";
-            }
-            HttpContext.Session.Clear();
-            return RedirectToAction("Login", "Auth");
+            
+            return View("Login", "Auth");
         }
     }
 }
