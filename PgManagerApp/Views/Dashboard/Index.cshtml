@@ -1,0 +1,424 @@
+﻿@using System.Text.Json
+@model PgManagerApp.Models.DashboardViewModel
+
+<style>
+    /* Ensure the chart container is scrollable */
+    .scrollable-container {
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    /* Optional: style the chart container for better presentation */
+    #chartContainer {
+        display: inline-block;
+    }
+</style>
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <!-- Dashboard Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800 m-1">Dashboard</h1>
+        <a href="#" id="downloadPdfBtn" class="d-sm-inline-block btn btn-sm m-1 btn-primary shadow-sm" data-toggle="modal"
+           data-target="#downloadModal"><i class="fas fa-download mr-1 fa-md text-white-50"></i> Download Report</a>
+    </div>
+
+    <!-- Download Modal -->
+    <div class="modal fade" id="downloadModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel">Download Report</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="startDate">Start Date*</label>
+                        <input type="date" id="startDate" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="endDate">End Date*</label>
+                        <input type="date" id="endDate" class="form-control">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="confirmDownloadBtn" class="btn btn-sm btn-primary" disabled>
+                        <i class="fas fa-download mr-1 fa-md text-white-50"></i> Download
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <!-- Content Row -->
+    <div class="downloadReport">
+    <div class="row d-fleex justify-content-center align-items-center ">
+
+        <!-- Earnings (Monthly) Card Example -->
+        <div class="col-xl-3 col-md-4 col-sm-6 mt-2">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Employees
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalUsers</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user fa-2x ml-2 text-secondary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Earnings (Monthly) Card Example -->
+        <div class="col-xl-3 col-md-4 col-sm-6 mt-2">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Total Tasks
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.CountPaid</div>
+                        </div>
+                        <div class="col-auto">
+                                <i class="fas fa-hourglass-half fa-2x ml-2 text-secondary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Earnings (Monthly) Card Example -->
+        <div class="col-xl-3 col-md-4 col-sm-6 mt-2">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                               Total Projects
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.CountUnpaid</div>
+                        </div>
+                        <div class="col-auto">
+                                <i class="fas fa-project-diagram fa-2x ml-2 text-secondary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Earnings (Monthly) Card Example -->
+        <div class="col-xl-3 col-md-4 col-sm-6 mt-2">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Holiday List
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">₹ @Model.TotalAmount</div>
+                        </div>
+                        <div class="col-auto">
+                                <i class="fas fa-calendar fa-2x ml-2 text-secondary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+            <!-- First Card: Create Designation -->
+            <div class="col-xl-4 col-md-6 col-sm-12 mt-3">
+                <div class="card border-left-primary shadow h-100 py-4">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-3">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-3">
+                                    Create Designation
+                                </div>
+                                <input type="text" class="form-control h5 font-weight-bold text-gray-800 mb-3" placeholder="Enter Designation">
+                                <button class="btn btn-primary w-100">Add</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Second Card: Create Projects -->
+            <div class="col-xl-4 col-md-6 col-sm-12 mt-3">
+                <div class="card border-left-warning shadow h-100 py-4">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-3">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-3">
+                                    Create Projects
+                                </div>
+                                <input type="text" class="form-control h5 font-weight-bold text-gray-800 mb-3" placeholder="Enter Project Name">
+                                <button class="btn btn-warning w-100">Add</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+    </div>
+        <div class="row">
+            
+        </div>
+
+
+
+
+
+    <!-- Chart Row -->
+
+
+        <div class="container mt-4 mb-4 bg-white rounded shadow">
+           <div class="row">
+            <strong class="text-center m-4">Weekly Users</strong>
+                <div class="col-12 scrollable-container">
+                
+                    <div id="chartContainer" style="height: 500px; width: 100%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- End Page Content -->
+<script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/vfs_fonts.js"></script>
+
+
+<script type="text/javascript">
+    window.onload = function () {
+        var chart = new CanvasJS.Chart("chartContainer", {
+            data: [
+                {
+                    type: "column",
+                    dataPoints: @Html.Raw(ViewBag.DataPoints)
+                        }
+            ]
+        });
+        chart.render();
+    };
+
+
+    window.pdfData = {
+        userCounts: @Html.Raw(JsonSerializer.Serialize(ViewBag.UserCounts)),
+        totalUsers: @Model.TotalUsers,
+        pendingUsers: @Model.CountUnpaid,
+        allocatedUsers: @Model.CountPaid,
+        totalPendingPay: @Model.TotalPendingAmount,
+        totalAmount: @Model.TotalAmount,
+        totalRooms: @Model.AvailableRooms,
+        userSummary: @Html.Raw(JsonSerializer.Serialize(Model.UsersSummary))
+        };
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const startDateInput = document.getElementById('startDate');
+        const endDateInput = document.getElementById('endDate');
+        const confirmDownloadBtn = document.getElementById('confirmDownloadBtn');
+
+        function validateDates() {
+            const startDate = new Date(startDateInput.value);
+            const endDate = new Date(endDateInput.value);
+
+            // Enable the button if both dates are selected and start date is before end date
+            confirmDownloadBtn.disabled = !startDateInput.value || !endDateInput.value || startDate > endDate;
+        }
+
+        startDateInput.addEventListener('change', validateDates);
+        endDateInput.addEventListener('change', validateDates);
+
+        confirmDownloadBtn.addEventListener('click', function () {
+            const startDate = startDateInput.value;
+            const endDate = endDateInput.value;
+
+            // Close the modal
+            $('#downloadModal').modal('hide');
+
+            // Trigger the PDF download
+            downloadReport(startDate, endDate);
+        });
+
+
+        function downloadReport(startDate, endDate) {
+            // Get data from the global pdfData object
+            const data = window.pdfData;
+
+            // Convert start and end dates to Date objects for comparison
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+
+            // Filter UserSummary data based on selected date range
+            const filteredUserSummary = data.userSummary.filter(user => {
+                return user.Transactions.some(transaction => {
+                    const transactionStartDate = new Date(transaction.StartDate);
+                    const transactionEndDate = new Date(transaction.EndDate);
+                    return transactionStartDate <= end && transactionEndDate >= start;
+                });
+            });
+
+            // Create the user count table body
+            const tableBody = [
+                [{ text: 'Day', style: 'tableHeader' }, { text: 'User Count', style: 'tableHeader' }]
+            ];
+
+            // Populate the user count table with data
+            Object.keys(data.userCounts).forEach(day => {
+                tableBody.push([day, data.userCounts[day]]);
+            });
+
+            // Create the user summary table body
+            const userSummaryBody = [
+                [
+                    { text: 'Name', style: 'tableHeader' },
+                    { text: 'Mobile', style: 'tableHeader' },
+                    { text: 'Paid Amount', style: 'tableHeader' },
+                    { text: 'Pending Amount', style: 'tableHeader' },
+                    { text: 'Actual Amount', style: 'tableHeader' },
+                    { text: 'Room Numbers', style: 'tableHeader' }
+                ]
+            ];
+
+            filteredUserSummary.forEach(user => {
+                userSummaryBody.push([
+                    { text: user.Name, style: 'tableData' },
+                    { text: user.MobileNumber, style: 'tableData' },
+                    { text: 'Rs. ' + user.PaidAmount, style: 'tableData' },
+                    { text: 'Rs. ' + user.PendingAmount, style: 'tableData' },
+                    { text: 'Rs. ' + user.ChargeAmount, style: 'tableData' },
+                    { text: user.RoomNumbers.join(', '), style: 'tableData' }  // Join room numbers into a single string
+                ]);
+            });
+
+            // Define the PDF document
+            var docDefinition = {
+                pageOrientation: 'landscape',  // Set the page orientation to landscape
+                content: [
+                    { text: 'Overall Report', style: 'header' },
+
+                    // First table with other details
+                    {
+                        table: {
+                            widths: ['*', '*'],
+                            body: [
+                                [{ text: 'Metric', style: 'tableHeader' }, { text: 'Value', style: 'tableHeader' }],
+                                ['Total Users', data.totalUsers],
+                                ['Pending Users', data.pendingUsers],
+                                ['Allocated Users', data.allocatedUsers],
+                                ['Total Pending Payment', 'Rs. ' + data.totalPendingPay],
+                                ['Total Amount Received', 'Rs. ' + data.totalAmount],
+                                ['Total Available Rooms', '' + data.totalRooms]
+                            ]
+                        },
+                        layout: {
+                            fillColor: function (rowIndex, node, columnIndex) {
+                                return rowIndex === 0 ? '#000000' : null; // Header row background color
+                            },
+                            hLineColor: function (i, node) {
+                                return i === 0 ? 'black' : '#ddd';
+                            },
+                            vLineColor: function (i, node) {
+                                return i === 0 ? null : '#ddd';
+                            },
+                            hLineWidth: function (i, node) {
+                                return i === 0 ? 2 : 1;
+                            },
+                            vLineWidth: function (i, node) {
+                                return i === 0 ? 0 : 1;
+                            },
+                            paddingLeft: function (i) { return i === 0 ? 0 : 4; }, // Reduced padding
+                            paddingRight: function (i, node) { return i === node.table.widths.length - 1 ? 0 : 4; } // Reduced padding
+                        }
+                    },
+
+                    // Space between tables
+                    { text: '', margin: [0, 10] },
+
+                    // User Summary section
+                    { text: 'Users Summary', style: 'header' },
+                    { text: 'Date Range: ' + startDate + ' to ' + endDate, style: 'subheader' },
+
+                    // Check if there are users to display
+                    filteredUserSummary.length > 0
+                        ? {
+                            table: {
+                                widths: [120, 100, 100, 100, 100, '*'], // Adjusted column widths
+                                body: userSummaryBody
+                            },
+                            layout: {
+                                fillColor: function (rowIndex, node, columnIndex) {
+                                    return rowIndex === 0 ? '#000000' : null; // Header row background color
+                                },
+                                hLineColor: function (i, node) {
+                                    return i === 0 ? 'black' : '#ddd';
+                                },
+                                vLineColor: function (i, node) {
+                                    return i === 0 ? null : '#ddd';
+                                },
+                                hLineWidth: function (i, node) {
+                                    return i === 0 ? 2 : 1;
+                                },
+                                vLineWidth: function (i, node) {
+                                    return i === 0 ? 0 : 1;
+                                },
+                                paddingLeft: function (i) { return i === 0 ? 0 : 4; }, // Reduced padding
+                                paddingRight: function (i, node) { return i === node.table.widths.length - 1 ? 0 : 4; } // Reduced padding
+                            }
+                        }
+                        : { text: 'No user data found for the selected date range.', style: 'noDataMessage' }
+                ],
+                styles: {
+                    header: {
+                        fontSize: 14, // Smaller font size for headers
+                        bold: true,
+                        alignment: 'center',
+                        margin: [0, 20, 0, 10]
+                    },
+                    subheader: {
+                        fontSize: 10, // Smaller font size for subheaders
+                        alignment: 'center',
+                        margin: [0, 0, 0, 10]
+                    },
+                    tableHeader: {
+                        bold: true,
+                        fontSize: 9, // Smaller font size for table headers
+                        color: 'white',
+                        fillColor: 'black',
+                        alignment: 'center'
+                    },
+                    tableData: {
+                        fontSize: 9, // Smaller font size for table data
+                        alignment: 'center'
+                    },
+                    noDataMessage: {
+                        fontSize: 10,
+                        alignment: 'center',
+                        margin: [0, 20, 0, 20]
+                    }
+                }
+            };
+
+            // Create and download the PDF
+            pdfMake.createPdf(docDefinition).download('User_Report.pdf');
+        }
+
+
+    });
+
+
+
+
+</script>
