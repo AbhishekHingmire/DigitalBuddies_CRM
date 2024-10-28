@@ -19,6 +19,7 @@ namespace PgManagerApp.Controllers
 
             var users = _context.Users.ToList(); // Get users from the database
             ViewBag.Users = users; // Pass users to the view
+
             var projects = _context.Projects.ToList(); 
             ViewBag.Projects = projects;
             return View(model);

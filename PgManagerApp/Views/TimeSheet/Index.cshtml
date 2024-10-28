@@ -1,4 +1,6 @@
-﻿<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+﻿@model PgManagerApp.Models.TimeShetViewModel
+
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 <title>Week Wise Timesheet</title>
 <style>
     body {
@@ -69,55 +71,28 @@
             </tr>
         </thead>
         <tbody id="timesheetBody">
-            <tr>
-                <td>Monday</td>
-                <td>1-1-2001</td>
-                <td>10:50:23 AM</td>
-                <td>15:50:23 PM</td>
-                <td>8hr</td>
-            </tr>
-            <tr>
-                <td>Tuesday</td>
-                <td>1-1-2001</td>
-                <td>10:50:23 AM</td>
-                <td>15:50:23 PM</td>
-                <td>8hr</td>
-            </tr>
-            <tr>
-                <td>Wedenesday</td>
-                <td>1-1-2001</td>
-                <td>10:50:23 AM</td>
-                <td>15:50:23 PM</td>
-                <td>8hr</td>
-            </tr>
-            <tr>
-                <td>Thursday</td>
-                <td>1-1-2001</td>
-                <td>10:50:23 AM</td>
-                <td>15:50:23 PM</td>
-                <td>8hr</td>
-            </tr>
-            <tr>
-                <td>Friday</td>
-                <td>1-1-2001</td>
-                <td>10:50:23 AM</td>
-                <td>15:50:23 PM</td>
-                <td>8hr</td>
-            </tr>
-            <tr>
-                <td>Saturday</td>
-                <td>1-1-2001</td>
-                <td>10:50:23 AM</td>
-                <td>15:50:23 PM</td>
-                <td>8hr</td>
-            </tr>
-            <tr>
-                <td>Monday</td>
-                <td>1-1-2001</td>
-                <td>10:50:23 AM</td>
-                <td>15:50:23 PM</td>
-                <td>8hr</td>
-            </tr>
+            @if (Model.CheckInOuts != null && Model.CheckInOuts.Any())
+            {
+                foreach (var data in Model.CheckInOuts)
+                {
+                    // Get the day of the week from the Date property
+                    string dayOfWeek = data.Date.DayOfWeek.ToString(); // Get the name of the day
+
+                    <tr>
+                        <td>@dayOfWeek</td> <!-- Display the day of the week -->
+                        <td>@data.Date.ToString("d")</td> <!-- Display the date -->
+                        <td>@data.CheckInTime</td> <!-- Display CheckInTime -->
+                        <td>@data.CheckOutTime</td> <!-- Display CheckOutTime -->
+                        <td>comming-soon</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr class="text-danger">
+                    <td colspan="5">No data found</td>
+                </tr>
+            }
         </tbody>
     </table>
 

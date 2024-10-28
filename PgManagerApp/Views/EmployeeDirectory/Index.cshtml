@@ -13,6 +13,7 @@
         <thead>
             <tr>
                 <th>Id</th>
+                <th>User Id</th>
                 <th>Name</th>
                 <th>Email</th>
                 <th>Designation</th>
@@ -27,6 +28,7 @@
             {
                 <tr>
                     <td>@employee.Id</td>
+                    <td>@employee.UserId</td>
                     <td>@employee.Name</td>
                     <td>@employee.Email</td>
                     <td>@employee.Designation</td>
@@ -65,8 +67,14 @@
                         <input type="email" class="form-control form-control-sm" id="Email" name="Email" required>
                     </div>
                     <div class="form-group">
-                        <label for="Designation" class="small">Designation</label>
-                        <input type="text" class="form-control form-control-sm" id="Designation" name="Designation">
+                        <label for="projectSelect" class="form-label">Select Designation</label>
+                        <select class="form-select" id="projectSelect" name="Designation" required>
+                            <option value="" disabled selected>Select a designation</option>
+                            @foreach (var des in ViewBag.Designations)
+                            {
+                                <option value="@des.Name">@des.Name</option>
+                            }
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="MobileNumber" class="small">Mobile Number</label>
@@ -127,6 +135,7 @@
 
 <script>
     function viewEmployee(id) {
+        debugger;
         $.get('/EmployeeDirectory/View/' + id, function (data) {
             $('#viewEmployeeBody').html(data);
             $('#viewEmployeeModal').modal('show');

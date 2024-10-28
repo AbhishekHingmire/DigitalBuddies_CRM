@@ -47,6 +47,22 @@ namespace PgManagerApp.Controllers
             return RedirectToAction("Index");
         }
 
+        public IActionResult AddDesignation(string designationName)
+        {
+            if (designationName != null)
+            {
+                Designation des = new Designation { Name = designationName };
+                _context.Designations.Add(des);
+                _context.SaveChanges();
+                TempData["Success"] = "Designation added succesfully";
+            }
+            else
+            {
+                TempData["Error"] = "Something went wrong!";
+            }
+            return RedirectToAction("Index");
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

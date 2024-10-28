@@ -12,8 +12,8 @@ using PgManagerApp.Models;
 namespace PgManagerApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241027113027_init1.1")]
-    partial class init11
+    [Migration("20241028075605_init1")]
+    partial class init1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,51 @@ namespace PgManagerApp.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("PgManagerApp.Models.CheckInOut", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<TimeSpan>("CheckInTime")
+                        .HasColumnType("time");
+
+                    b.Property<TimeSpan?>("CheckOutTime")
+                        .HasColumnType("time");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EmpNameWithDes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CheckInOuts");
+                });
+
+            modelBuilder.Entity("PgManagerApp.Models.Designation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Designations");
+                });
 
             modelBuilder.Entity("PgManagerApp.Models.MasterUser", b =>
                 {
@@ -167,6 +212,9 @@ namespace PgManagerApp.Migrations
 
                     b.Property<string>("Salary")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");

@@ -24,6 +24,9 @@ namespace PgManagerApp.Controllers
         }
         public IActionResult Index()
         {
+            var designations = _context.Designations.ToList()?? new List<Designation>();
+            ViewBag.Designations = designations;
+
             var model = _context.Users.ToList();
             return View(model);
         }
@@ -36,7 +39,6 @@ namespace PgManagerApp.Controllers
                 // Handle profile picture upload
                 if (ProfilePicture != null)
                 {
-                    // Save the uploaded file to wwwroot/images
                     string uploadsFolder = Path.Combine(_hostEnvironment.WebRootPath, "images");
                     string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(ProfilePicture.FileName);
                     string filePath = Path.Combine(uploadsFolder, uniqueFileName);
@@ -46,8 +48,25 @@ namespace PgManagerApp.Controllers
                         await ProfilePicture.CopyToAsync(fileStream);
                     }
 
-                    // Set the ProfilePicturePath for saving in the database
                     user.ProfilePicturePath = "/images/" + uniqueFileName;
+                }
+
+                // Generate new UserId in the format EMP001, EMP002, etc.
+                var lastEmployee = _context.Users
+                                           .OrderByDescending(u => u.Id)
+                                           .FirstOrDefault();
+
+                if (lastEmployee != null && lastEmployee.UserId != null)
+                {
+                    // Extract the numeric part of the last UserId and increment it
+                    string numericPart = lastEmployee.UserId.Substring(3); // "EMP001" => "001"
+                    int newNumber = int.Parse(numericPart) + 1;
+                    user.UserId = "EMP" + newNumber.ToString("D3"); // Format as EMPxxx
+                }
+                else
+                {
+                    // If no previous UserId exists, start from EMP001
+                    user.UserId = "EMP001";
                 }
 
                 // Save the employee details to the database
@@ -61,6 +80,7 @@ namespace PgManagerApp.Controllers
             return View(user);
         }
 
+        [HttpGet]
         public IActionResult View(int id)
         {
             var employee = _context.Users.Find(id);

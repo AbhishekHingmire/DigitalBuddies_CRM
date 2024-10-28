@@ -41,7 +41,7 @@
 
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand d-flex align-items-center justify-content-center" href="~/Dashboard">
-                    <img class="rounded mt-4 mb-2" src="~/images/profiles/DigitalLogoo.png" style="width: 150px; height: 70px;"> <!-- Adjust the size as needed -->
+                    <img class="rounded mt-4 mb-2 img-fluid" src="~/images/profiles/DigitalLogoo.png" style="width: auto; max-height: 70px; height:auto;"> <!-- Adjust the size as needed -->
 
                 @* <div class="sidebar-brand-text mx-3">Digital Buddiess</div> *@
             </a>
@@ -71,14 +71,6 @@
                 <a class="nav-link collapsed d-flex align-items-center" href="~/TaskDetails">
                     <i class="fas fa-check mr-2"></i>
                     <span>Task Details</span>
-
-                    @{
-                        int? pendingUserApprovals;
-                        if (Cache.TryGetValue("approvalCount", out pendingUserApprovals) && pendingUserApprovals > 0)
-                        {
-                            <span class="badge bg-danger text-white ml-1" style="font-size:0.7rem;">@pendingUserApprovals</span>
-                        }
-                    }
                 </a>
             </li>
 

@@ -17,6 +17,7 @@ namespace PgManagerApp.Models
     {
         [Key]
         public int Id { get; set; }
+        public string? UserId { get; set; }
 
         [Required(ErrorMessage = "Name is required.")]
         [StringLength(60)]

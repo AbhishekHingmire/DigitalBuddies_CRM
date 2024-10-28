@@ -1,20 +1,26 @@
 ﻿@model UserRegistration
 
-<div class="container" style="font-size: 1rem;">
-    <div class="row">
-        <div class="col-12">
-            <p><strong>Id:</strong> @Model.Id</p>
-            <p><strong>Name:</strong> @Model.Name</p>
-            <p><strong>Email:</strong> @Model.Email</p>
-            <p><strong>Designation:</strong> @Model.Designation</p>
-            <p><strong>Mobile Number:</strong> @Model.MobileNumber</p>
-            <p><strong>Salary:</strong> @Model.Salary</p>
-            <p><strong>Onboard Date:</strong> @Model.OnboardDate</p>
-            <p><strong>Identity Type:</strong> @Model.IdentityType</p>
-            <p><strong>Identity Number:</strong> @Model.IdentityNumber</p>
-            <p><strong>Address:</strong> @Model.Address</p>
-            <p><strong>Profile Picture:</strong></p>
-            <img src="@Model.ProfilePicturePath" alt="Profile Picture" style="max-width: 100px;" />
+    <!-- Profile Card -->
+    <div class="card mx-auto text-center" style="max-width: 800px; border-radius: 15px; box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);">
+        <!-- Profile Picture -->
+        <div class="mt-4">
+            <img src="@Model.ProfilePicturePath" alt="Profile Picture" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover; border: 5px solid #fff; box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);">
+        </div>
+
+        <!-- Profile Details -->
+        <div class="card-body">
+            <h3 class="card-title mb-2">@Model.Name</h3>
+            <p class="text-muted">@Model.Designation</p>
+
+            <!-- Contact and Other Information -->
+            <div class="text-start mt-4" style="font-size: 0.9rem;">
+                <p><strong>User ID:</strong> @Model.UserId</p>
+                <p><strong>Email:</strong> @Model.Email</p>
+                <p><strong>Mobile:</strong> @Model.MobileNumber</p>
+                <p><strong>Salary:</strong> @Model.Salary</p>
+                <p><strong>Onboard Date:</strong> @Model.OnboardDate</p>
+                <p><strong>Identity:</strong> @Model.IdentityType - @Model.IdentityNumber</p>
+                <p><strong>Address:</strong> @Model.Address</p>
+            </div>
         </div>
     </div>
-</div>

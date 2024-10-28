@@ -12,8 +12,8 @@ using PgManagerApp.Models;
 namespace PgManagerApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241027105055_init1")]
-    partial class init1
+    [Migration("20241028074601_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,48 @@ namespace PgManagerApp.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("PgManagerApp.Models.CheckInOut", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<TimeSpan>("CheckInTime")
+                        .HasColumnType("time");
+
+                    b.Property<TimeSpan?>("CheckOutTime")
+                        .HasColumnType("time");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EmpNameWithDes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CheckInOuts");
+                });
+
+            modelBuilder.Entity("PgManagerApp.Models.Designation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Designations");
+                });
 
             modelBuilder.Entity("PgManagerApp.Models.MasterUser", b =>
                 {
@@ -79,26 +121,24 @@ namespace PgManagerApp.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("AssignedTo")
+                    b.Property<string>("AssignedToId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Comments")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("ImagePath")
-                        .IsRequired()
+                    b.Property<string>("MediaDescription")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Priority")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ProjectName")
+                    b.Property<string>("ProjectId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -113,8 +153,10 @@ namespace PgManagerApp.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("VideoPath")
-                        .IsRequired()
+                    b.Property<string>("UploadImage")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UploadVideo")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -167,6 +209,9 @@ namespace PgManagerApp.Migrations
 
                     b.Property<string>("Salary")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
