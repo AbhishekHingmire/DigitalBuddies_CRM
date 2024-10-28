@@ -9,7 +9,7 @@ using System.Text.Json;
 namespace PgManagerApp.Controllers
 {
     /*    [Authorize]*/
-    [Authorize(Roles = "User")]
+    [Authorize(Roles = "User, Admin")]
     public class DashboardController : Controller
     {
         private readonly ILogger<DashboardController> _logger;
@@ -23,13 +23,16 @@ namespace PgManagerApp.Controllers
 
         public IActionResult Index()
         {
+            var userId = HttpContext.Request.Cookies["UserId"];
+
             DashboardViewModel model = new DashboardViewModel
             {
-                HolidayList = "1",
+                EventList = "1",
                 TotalProjects = "50",
                 TotalTasks = "17",
                 TotalUsers = "20"
             };
+
             return View(model);
         }
         public IActionResult AddProject(string projectName)

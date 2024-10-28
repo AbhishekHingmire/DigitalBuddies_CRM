@@ -9,6 +9,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Http;
 
 namespace PgManagerApp.Controllers
 {
@@ -65,6 +66,13 @@ namespace PgManagerApp.Controllers
 
             if (user != null)
             {
+                Response.Cookies.Append("UserId", user.UserId, new CookieOptions
+                {
+                    HttpOnly = true,
+                    // Secure = true, // Use only in production for HTTPS
+                    Expires = DateTimeOffset.UtcNow.AddMinutes(30),
+                    SameSite = SameSiteMode.Strict, // Optional: enhances security by limiting cookie exposure
+                });
                 // Creating claims for user authentication
                 var claims = new List<Claim>
         {

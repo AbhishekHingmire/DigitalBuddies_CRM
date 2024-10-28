@@ -36,7 +36,7 @@ namespace PgManagerApp.Models
         public string? TotalUsers { get; set; }
         public string? TotalTasks { get; set; }
         public string? TotalProjects { get; set; }
-        public string? HolidayList { get; set; }
+        public string? EventList { get; set; }
         public string? CreateDesignation { get; set; }
         public string? CreateProject { get; set; }
     }
