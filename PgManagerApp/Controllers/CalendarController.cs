@@ -38,7 +38,7 @@ namespace PgManagerApp.Controllers
                 if (existingEvent != null)
                 {
                     existingEvent.EventName = eventData.EventName;
-                    existingEvent.Date = eventData.Date;
+                    eventData.Date = eventData.Date.AddDays(1); // Adjust the date increment if needed
                     _context.CalendarEvents.Update(existingEvent);
                 }
                 else

@@ -24,8 +24,7 @@ namespace PgManagerApp.Models
     [NotMapped]
     public class LoginViewModel
     {
-        [Required(ErrorMessage = "Email is required")]
-        [EmailAddress(ErrorMessage = "Invalid Email Address")]
+        [Required(ErrorMessage = "User Id is required")]
         public string? Email { get; set; }
 
         [Required(ErrorMessage = "Password is required")]

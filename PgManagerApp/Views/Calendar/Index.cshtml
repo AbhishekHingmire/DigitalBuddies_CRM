@@ -113,6 +113,8 @@
                     eventButton.html(`${day}<br><span style="color: blue;">${title}</span>`).css('background-color', 'white');
                     $('#eventModal').modal('hide');
                     $('#eventForm')[0].reset();
+                    alert('Event added successfully.');
+                    location.reload(); // This will refresh the page
                 },
                 error: function (xhr) {
                     alert('Error adding/updating event: ' + xhr.responseText);

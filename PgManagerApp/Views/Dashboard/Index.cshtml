@@ -325,59 +325,52 @@
 <!-- End Page Content -->
 
 <script>
-    let timerInterval;
-    let totalTime = 0; // Start with 0 seconds
-    let checkInTime;
+        let timerInterval;
+        let startTime;
+        let endTime;
 
-    function formatTime(seconds) {
-        const hours = String(Math.floor(seconds / 3600)).padStart(2, '0');
-        const minutes = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
-        const secs = String(seconds % 60).padStart(2, '0');
-        return `${hours}:${minutes}:${secs}`;
-    }
+        $('#startBtn').click(function () {
+            startTime = new Date();
+            $('#timer').text("00:00:00"); // Reset timer display
+            $('#checkInOut').text("Timer started...");
 
-    function displayCheckInTime() {
-        const currentDate = new Date();
-        checkInTime = currentDate.toLocaleString();
-        document.getElementById('checkInOut').innerHTML += `
-                <div class="log-time">
-                    <strong>Log In Time:</strong> ${checkInTime}
-                </div>
-            `;
-    }
+            timerInterval = setInterval(function () {
+                const elapsedTime = new Date() - startTime;
+                const seconds = Math.floor((elapsedTime / 1000) % 60);
+                const minutes = Math.floor((elapsedTime / 60000) % 60);
+                const hours = Math.floor((elapsedTime / 3600000));
+                $('#timer').text(`${pad(hours)}:${pad(minutes)}:${pad(seconds)}`);
+            }, 1000);
+        });
 
-    document.getElementById('timer').innerText = formatTime(totalTime); // Set initial timer display
+        $('#endBtn').click(function () {
+            clearInterval(timerInterval);
+            endTime = new Date();
+            $('#checkInOut').text("Timer stopped...");
 
-    document.getElementById('startBtn').addEventListener('click', function () {
-        let startTime = Date.now();
+            const userTimerData = {
+                UserId: "YourUserId", // Replace with actual user ID
+                StartTime: startTime.toISOString(),
+                EndTime: endTime.toISOString()
+            };
 
-        timerInterval = setInterval(() => {
-            totalTime = Math.floor((Date.now() - startTime) / 1000);
-            document.getElementById('timer').innerText = formatTime(totalTime);
-        }, 1000);
+            $.ajax({
+                type: 'POST',
+                url: '/Dashboard/SaveTimer',
+                data: JSON.stringify(userTimerData),
+                contentType: 'application/json',
+                success: function () {
+                    alert('Timer data saved successfully.');
+                    $('#totalTime').text(`Total Time: ${Math.floor((endTime - startTime) / 1000)} seconds`);
+                },
+                error: function (xhr, status, error) {
+                    alert('Error saving timer: ' + xhr.responseText);
+                }
+            });
+        });
 
-        displayCheckInTime(); // Display check-in time only
-    });
-
-    document.getElementById('endBtn').addEventListener('click', function () {
-        clearInterval(timerInterval);
-        const logoutModal = new bootstrap.Modal(document.getElementById('logoutModal'));
-        logoutModal.show();
-    });
-
-    document.getElementById('confirmLogout').addEventListener('click', function () {
-        clearInterval(timerInterval);
-        const checkOutTime = new Date().toLocaleString(); // Get check-out time on logout
-        if (totalTime >= 60) {
-            document.getElementById('totalTime').innerText = `Total Time: ${formatTime(totalTime)}`;
-        } else {
-            document.getElementById('totalTime').innerText = `Total Time: 00:01:00`;
+        function pad(number) {
+            return number < 10 ? '0' + number : number;
         }
-        document.getElementById('checkInOut').innerHTML += `
-                <div class="log-time">
-                    <strong>Log Out Time:</strong> ${checkOutTime}
-                </div>
-            `;
-        $('#logoutModal').modal('hide');
-    });
+
 </script>

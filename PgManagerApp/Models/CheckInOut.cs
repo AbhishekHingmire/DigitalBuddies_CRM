@@ -31,4 +31,21 @@ namespace PgManagerApp.Models
         public string? TotalTime { get; set; }
     }
 
+    public class UserTimer
+    {
+        [Key]
+        public int Id { get; set; }
+
+        [Required]
+        public string? UserId { get; set; } = "EMP01";
+
+        [Required]
+        public DateTime StartTime { get; set; }
+
+        [Required]
+        public DateTime EndTime { get; set; }
+
+        public TimeSpan TotalTime => EndTime - StartTime;
+    }
+
 }

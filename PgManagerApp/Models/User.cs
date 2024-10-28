@@ -2,6 +2,34 @@
 using System.ComponentModel.DataAnnotations.Schema;
 namespace PgManagerApp.Models
 {
+    public class LoginUser
+    {
+        [Key]
+        public int Id { get; set; }
+        public string? UserId { get; set; }
+        public string? HashPassword { get; set; }
+    }
+    public class Role
+    {
+        [Key]
+        public int Id { get; set; }
+        public string? Name { get; set; }
+        public string? Description { get; set; }
+    }
+    public class UserRole
+    {
+        public int Id { get; set; }
+        public string? UserId { get; set; }
+        public int RoleId { get; set; }
+    }
+
+    [NotMapped]
+    public class LoginRequest
+    {
+        public string? UserId { get; set; }
+        public string? Password { get; set; }
+    }
+
     [NotMapped]
     public class DashboardViewModel
     {
@@ -57,6 +85,8 @@ namespace PgManagerApp.Models
         public List<UserRegistration>? Users { get; set; }
 
         public int? MasterId { get; set; }
+
+        public string? PasswordHash { get; set; }
     }
 
 }

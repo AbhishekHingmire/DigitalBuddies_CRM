@@ -7,6 +7,8 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace PgManagerApp.Controllers
 {
@@ -14,11 +16,13 @@ namespace PgManagerApp.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IMemoryCache _cache;
-        public AuthController(ApplicationDbContext context, IMemoryCache cache)
+        private readonly IConfiguration _configuration;
+        public AuthController(ApplicationDbContext context, IMemoryCache cache, IConfiguration configuration)
         {
             _context = context;
             _cache = cache;
-        }
+            _configuration = configuration;
+        }   
 
         [HttpGet]
         public IActionResult Register()
@@ -54,45 +58,73 @@ namespace PgManagerApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult LoginUser(LoginViewModel model)
+        public IActionResult LoginUser(LoginRequest login)
         {
-            if (ModelState.IsValid)
+            // Validate user credentials
+            var user = _context.LoginUsers.SingleOrDefault(x => x.UserId == login.UserId && x.HashPassword == HashPassword(login.Password));
+
+            if (user != null)
             {
-                var user = _context.MasterUser
-                    .SingleOrDefault(u => u.Email == model.Email && u.PasswordHash == HashPassword(model.Password));
+                // Creating claims for user authentication
+                var claims = new List<Claim>
+        {
+            new Claim(JwtRegisteredClaimNames.Sub, _configuration["Jwt:Subject"]),
+            new Claim("Id", user.Id.ToString()),
+            new Claim(ClaimTypes.Name, user.UserId),
+        };
 
-                if (user != null)
+                // Retrieve user roles
+                var userRoles = _context.UserRoles.Where(x => x.UserId == user.UserId).ToList();
+                var roleIds = userRoles.Select(x => x.RoleId).ToList();
+
+                // Add roles to claims
+                var roles = _context.Roles.Where(x => roleIds.Contains(x.Id)).ToList();
+                foreach (var role in roles)
                 {
-                    var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, user.Name)
-                // Add more claims as needed
-            };
-
-                    var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                    var principal = new ClaimsPrincipal(identity);
-
-                    // Sign in the user
-                    HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-
-                    HttpContext.Session.SetInt32("MasterUserId", user.Id);
-                    HttpContext.Session.SetString("Username", user.Name);
-                    _cache.Set("Username", user.Name);
-                    return RedirectToAction("Index", "Dashboard");
+                    claims.Add(new Claim(ClaimTypes.Role, role.Name));
                 }
-                else
+
+                // JWT token generation
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+                var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+                var token = new JwtSecurityToken(
+                    _configuration["Jwt:Issuer"],
+                    _configuration["Jwt:Audience"],
+                    claims,
+                    expires: DateTime.UtcNow.AddMinutes(30), // Set token expiry
+                    signingCredentials: signIn
+                );
+
+                var jwtToken = new JwtSecurityTokenHandler().WriteToken(token);
+
+                // Store JWT in a cookie
+                Response.Cookies.Append("JwtToken", jwtToken, new CookieOptions
                 {
-                    TempData["Error"] = "Invalid email or password";
-                }
-                
+                    HttpOnly = true,
+                    // Secure = true, // Use only in production for HTTPS
+                    Expires = DateTimeOffset.UtcNow.AddMinutes(30),
+                    SameSite = SameSiteMode.Strict, // Optional: enhances security by limiting cookie exposure
+                });
+
+                // Redirect to Dashboard
+                return RedirectToAction("Index", "Dashboard");
             }
+
+            // Invalid credentials case
+            TempData["Error"] = "Invalid credentials!";
             return RedirectToAction("Login");
         }
 
         public IActionResult Logout()
         {
-            HttpContext.Session.Clear();
-            HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            // Clear the JWT token cookie
+            Response.Cookies.Delete("JwtToken"); // Remove the JWT token from cookies
+
+            // Optionally clear session data
+            //HttpContext.Session.Clear(); // Clear session data
+
+            // Redirect the user to the login page (or homepage)
             return RedirectToAction("Login");
         }
 

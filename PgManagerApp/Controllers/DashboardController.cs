@@ -8,7 +8,8 @@ using System.Text.Json;
 
 namespace PgManagerApp.Controllers
 {
-/*    [Authorize]*/
+    /*    [Authorize]*/
+    [Authorize(Roles = "User")]
     public class DashboardController : Controller
     {
         private readonly ILogger<DashboardController> _logger;
@@ -61,6 +62,20 @@ namespace PgManagerApp.Controllers
                 TempData["Error"] = "Something went wrong!";
             }
             return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public IActionResult SaveTimer([FromBody] UserTimer userTimer)
+        {
+            if (userTimer == null || userTimer.StartTime == DateTime.MinValue || userTimer.EndTime == DateTime.MinValue)
+            {
+                return BadRequest("Invalid timer data.");
+            }
+
+            _context.UserTimers.Add(userTimer);
+            _context.SaveChanges();
+
+            return Ok(); // Return some response if needed
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

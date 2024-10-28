@@ -1,4 +1,4 @@
-﻿@model PgManagerApp.Models.LoginViewModel
+﻿@model PgManagerApp.Models.LoginRequest
 
 @{
     Layout = null;
@@ -46,20 +46,16 @@
                                     <div class="text-center">
                                         <h1 class="h4 text-gray-900 mb-4"><strong>Welcome back!</strong></h1>
                                     </div>
-                                    @if (TempData["Message"] != null)
-                                    {
-                                        <h6 class="m-3"><strong class="text-success">@TempData["Message"]</strong></h6>
-                                    }
                                     <form class="user" asp-action="LoginUser" method="Post">
                                         <div class="form-group">
-                                            <input type="email" asp-for="Email" class="form-control form-control-user"
+                                            <input type="text" asp-for="UserId" class="form-control form-control-user"
                                                    id="exampleInputEmail" aria-describedby="emailHelp"
-                                                   placeholder="Enter email address">
-                                            <span asp-validation-for="Email" class="text-danger"></span>
+                                                   placeholder="Enter User Id">
+                                            <span asp-validation-for="UserId" class="text-danger"></span>
                                         </div>
                                         <div class="form-group">
                                             <input type="password" asp-for="Password" class="form-control form-control-user"
-                                                   id="exampleInputPassword" placeholder="Enter password">
+                                                   id="exampleInputPassword" placeholder="Enter Password">
                                             <span asp-validation-for="Password" class="text-danger"></span>
                                         </div>
                                         <div class="form-group">
@@ -81,7 +77,7 @@
 
                                     <hr>
                                     <div class="text-center">
-                                        <a class="small" href="~/Auth/Register">Create an Account!</a>
+                                        <a class="small" href="#">Create an Account!</a>
                                     </div>
                                 </div>
                             </div>

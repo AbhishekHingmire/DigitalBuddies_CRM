@@ -6,6 +6,8 @@ using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -36,6 +38,8 @@ namespace PgManagerApp.Controllers
         {
             if (ModelState.IsValid)
             {
+                var loginUser = new LoginUser();
+                var userRole = new UserRole();
                 // Handle profile picture upload
                 if (ProfilePicture != null)
                 {
@@ -62,14 +66,24 @@ namespace PgManagerApp.Controllers
                     string numericPart = lastEmployee.UserId.Substring(3); // "EMP001" => "001"
                     int newNumber = int.Parse(numericPart) + 1;
                     user.UserId = "EMP" + newNumber.ToString("D3"); // Format as EMPxxx
+                    loginUser.UserId = "EMP" + newNumber.ToString("D3"); // Format as EMPxxx
+                    loginUser.HashPassword = HashPassword(user.PasswordHash); // Format as EMPxxx
+                    userRole.UserId = loginUser.UserId; 
+                    userRole.RoleId = 2; 
                 }
                 else
                 {
                     // If no previous UserId exists, start from EMP001
+                    loginUser.UserId = "EMP001"; // Format as EMPxxx
+                    loginUser.HashPassword = HashPassword(user.PasswordHash);
                     user.UserId = "EMP001";
+                    userRole.UserId = loginUser.UserId;
+                    userRole.RoleId = 2;
                 }
 
                 // Save the employee details to the database
+                _context.LoginUsers.Add(loginUser);
+                _context.UserRoles.Add(userRole);
                 _context.Users.Add(user);
                 await _context.SaveChangesAsync();
 
@@ -79,7 +93,15 @@ namespace PgManagerApp.Controllers
             // If validation fails, return to the same view
             return View(user);
         }
-
+        private string HashPassword(string password)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                var bytes = Encoding.UTF8.GetBytes(password);
+                var hash = sha256.ComputeHash(bytes);
+                return Convert.ToBase64String(hash);
+            }
+        }
         [HttpGet]
         public IActionResult View(int id)
         {

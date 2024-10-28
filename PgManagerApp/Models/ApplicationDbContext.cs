@@ -15,5 +15,9 @@ namespace PgManagerApp.Models
         public DbSet<TaskDetails> TaskDetails { get; set; }
         public DbSet<CheckInOut> CheckInOuts { get; set; }
         public DbSet<CalendarEvent> CalendarEvents { get; set; }
+        public DbSet<UserTimer> UserTimers { get; set; }
+        public DbSet<LoginUser> LoginUsers { get; set; }
+        public DbSet<Role> Roles { get; set; }
+        public DbSet<UserRole> UserRoles { get; set; }
     }
 }

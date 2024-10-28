@@ -12,6 +12,20 @@ namespace PgManagerApp.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "CalendarEvents",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EventName = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CalendarEvents", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CheckInOuts",
                 columns: table => new
                 {
@@ -38,6 +52,20 @@ namespace PgManagerApp.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Designations", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LoginUsers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    HashPassword = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LoginUsers", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -69,6 +97,20 @@ namespace PgManagerApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Roles",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Roles", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TaskDetails",
                 columns: table => new
                 {
@@ -93,6 +135,20 @@ namespace PgManagerApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UserRoles",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RoleId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserRoles", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
@@ -109,11 +165,27 @@ namespace PgManagerApp.Migrations
                     IdentityType = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IdentityNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ProfilePicturePath = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    MasterId = table.Column<int>(type: "int", nullable: true)
+                    MasterId = table.Column<int>(type: "int", nullable: true),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserTimers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndTime = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserTimers", x => x.Id);
                 });
         }
 
@@ -121,10 +193,16 @@ namespace PgManagerApp.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "CalendarEvents");
+
+            migrationBuilder.DropTable(
                 name: "CheckInOuts");
 
             migrationBuilder.DropTable(
                 name: "Designations");
+
+            migrationBuilder.DropTable(
+                name: "LoginUsers");
 
             migrationBuilder.DropTable(
                 name: "MasterUser");
@@ -133,10 +211,19 @@ namespace PgManagerApp.Migrations
                 name: "Projects");
 
             migrationBuilder.DropTable(
+                name: "Roles");
+
+            migrationBuilder.DropTable(
                 name: "TaskDetails");
 
             migrationBuilder.DropTable(
+                name: "UserRoles");
+
+            migrationBuilder.DropTable(
                 name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "UserTimers");
         }
     }
 }
