@@ -55,6 +55,8 @@ namespace PgManagerApp.Controllers
         [HttpGet]
         public IActionResult Login()
         {
+
+            string pass = HashPassword("Pass@123");
             return View();
         }
 

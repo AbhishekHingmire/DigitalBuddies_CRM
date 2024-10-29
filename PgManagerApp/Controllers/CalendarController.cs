@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PgManagerApp.Models;
 
 namespace PgManagerApp.Controllers
 {
+    [Authorize(Roles = "User, Admin")]
     public class CalendarController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -11,6 +13,7 @@ namespace PgManagerApp.Controllers
         {
             _context = context;
         }
+
 
         [HttpGet]
         public IActionResult Index()
