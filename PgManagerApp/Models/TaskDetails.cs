@@ -50,6 +50,8 @@ namespace PgManagerApp.Models
 
         [NotMapped]
         public List<TaskDetails>? Tasks { get; set; }
+        [NotMapped]
+        public bool? Del { get; set; }
     }
 
 }

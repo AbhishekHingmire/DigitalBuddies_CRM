@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PgManagerApp.Models;
 
 namespace PgManagerApp.Controllers
@@ -57,7 +58,17 @@ namespace PgManagerApp.Controllers
                     taskModel.UploadVideo = taskModel.UploadVideoFile.FileName; // Save the file name in the model
                 }
 
-                // Save taskModel to the database using your DbContext
+                // Get user contact
+                var userContact = await _context.Users.SingleOrDefaultAsync(x => x.UserId == taskModel.AssignedToId);
+                if (userContact != null)
+                {
+                    // Generate WhatsApp link
+                    var message = $"You have been assigned a new task by {taskModel.AssignedBy}, please check.";
+                    var whatsappUrl = GenerateWhatsAppUrl(message, userContact.MobileNumber);
+                    TempData["WhatsappNoti"] = whatsappUrl;
+                }
+
+                // Save taskModel to the database
                 _context.TaskDetails.Add(taskModel);
                 await _context.SaveChangesAsync();
 
@@ -67,6 +78,13 @@ namespace PgManagerApp.Controllers
             // If we got this far, something failed; redisplay the form.
             return View(taskModel);
         }
+
+        private string GenerateWhatsAppUrl(string message, string phoneNumber)
+        {
+            string encodedMessage = Uri.EscapeDataString(message);
+            return $"https://web.whatsapp.com/send?phone={phoneNumber}&text={encodedMessage}";
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> UpdateTask(TaskDetails taskModel)
@@ -83,6 +101,22 @@ namespace PgManagerApp.Controllers
             _context.SaveChanges();
             return RedirectToAction("Index");
         }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteTask(int Id)
+        {
+            var taskDetails = await _context.TaskDetails.FindAsync(Id);
+
+            if (taskDetails != null)
+            {
+                _context.TaskDetails.Remove(taskDetails);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction("Index");
+        }
+
+
 
     }
 }

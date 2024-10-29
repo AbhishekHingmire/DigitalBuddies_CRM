@@ -54,7 +54,9 @@
             <div class="kanban-header">To Do</div>
             @foreach (var task in Model.Tasks.Where(t => t.Status == "todo"))
             {
+                var id2 = task.Id;
                 <div class="task-card" data-id="@task.Id"
+                     data-ids = "@id2"
                      data-description="@task.TaskDescription"
                      data-status="@task.Status"
                      data-priority="@task.Priority"
@@ -76,7 +78,9 @@
             <div class="kanban-header">In Progress</div>
             @foreach (var task in Model.Tasks.Where(t => t.Status == "inprogress"))
             {
+                var id2 = task.Id;
                 <div class="task-card" data-id="@task.Id"
+                     data-ids="@id2"
                      data-description="@task.TaskDescription"
                      data-status="@task.Status"
                      data-priority="@task.Priority"
@@ -98,7 +102,9 @@
             <div class="kanban-header">Complete</div>
             @foreach (var task in Model.Tasks.Where(t => t.Status == "complete"))
             {
+                var id2 = task.Id;
                 <div class="task-card" data-id="@task.Id"
+                     data-ids="@id2"
                      data-description="@task.TaskDescription"
                      data-status="@task.Status"
                      data-priority="@task.Priority"
@@ -218,6 +224,13 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                @if (!ViewBag.IsEmployee)
+                {
+                    <form asp-action="DeleteTask" method="post" style="display:inline;align-items:flex-end;display:flex;">
+                        <input type="hidden" id="taskId2" name="Id" />
+                        <button type="submit" class="btn btn-danger ms-auto">Delete Task</button>
+                    </form>
+                }
                 <form id="taskDetailsForm" asp-action="UpdateTask" enctype="multipart/form-data" method="post">
                     <input type="hidden" id="taskId" name="Id" />
                     <div class="mb-3">
@@ -299,6 +312,8 @@
         taskCards.forEach(card => {
             card.addEventListener('click', function () {
                 const taskId = this.getAttribute('data-id');
+                const taskId2 = this.getAttribute('data-ids');
+                debugger;
                 const taskDescription = this.getAttribute('data-description');
                 const taskStatus = this.getAttribute('data-status');
                 const taskPriority = this.getAttribute('data-priority') || 'medium';
@@ -339,6 +354,9 @@
                 }
 
                 var modal = new bootstrap.Modal(document.getElementById('taskDetailsModal'));
+
+                document.getElementById('taskId2').value = taskId2;
+
                 modal.show();
             });
         });
