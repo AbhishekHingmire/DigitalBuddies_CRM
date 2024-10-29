@@ -9,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+// Configure JWT authentication
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -38,10 +39,17 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+// Configure session
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Set the timeout for the session
+    options.Cookie.HttpOnly = true; // Make the session cookie HttpOnly
+    options.Cookie.IsEssential = true; // Make the session cookie essential
+});
 
 // Add DbContext DI
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("DevConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DevConnection")));
 
 var app = builder.Build();
 
@@ -57,11 +65,16 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthentication(); // Ensure authentication middleware is in place
-app.UseAuthorization(); // Ensure authorization middleware is in place
+// Ensure authentication middleware is in place
+app.UseAuthentication();
+// Ensure authorization middleware is in place
+app.UseAuthorization();
+
+// Enable session before mapping routes
+app.UseSession();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Dashboard}/{action=Index}/{id?}");
+    pattern: "{controller=Auth}/{action=Login}/{id?}");
 
 app.Run();

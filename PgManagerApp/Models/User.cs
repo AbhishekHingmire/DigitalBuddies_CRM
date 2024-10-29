@@ -34,11 +34,15 @@ namespace PgManagerApp.Models
     public class DashboardViewModel
     {
         public string? TotalUsers { get; set; }
+        public string? UserId { get; set; }
         public string? TotalTasks { get; set; }
+        public string? TotalHolidays { get; set; }
         public string? TotalProjects { get; set; }
-        public string? EventList { get; set; }
         public string? CreateDesignation { get; set; }
         public string? CreateProject { get; set; }
+        public bool? IsEmployee { get; set; }
+        public List<UserRegistration>? Users { get; set; }
+        public bool? IsCheckedIn { get; set; }
     }
 
     public class UserRegistration
@@ -86,7 +90,12 @@ namespace PgManagerApp.Models
 
         public int? MasterId { get; set; }
 
+        [Required(ErrorMessage = "Please enter new password.")]
+        [Display(Name = "New Password")]
         public string? PasswordHash { get; set; }
+
+        [NotMapped]
+        public LoginUser? LoginUser { get; set; }
     }
 
 }

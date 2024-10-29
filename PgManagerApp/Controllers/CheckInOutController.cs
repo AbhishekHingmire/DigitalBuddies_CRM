@@ -29,5 +29,43 @@ namespace PgManagerApp.Controllers
             }
             return RedirectToAction("Index");
         }
+
+        [HttpPost]
+        public IActionResult EditCheckInOut([FromBody] CheckInOut model)
+        {
+            if (ModelState.IsValid)
+            {
+                var record = _context.CheckInOuts.Find(model.Id);
+                if (record != null)
+                {
+                    record.EmpNameWithDes = model.EmpNameWithDes;
+                    record.Date = model.Date;
+                    record.CheckInTime = model.CheckInTime;
+                    record.CheckOutTime = model.CheckOutTime;
+
+                    _context.SaveChanges(); // Save changes to the database
+                    return Ok();
+                }
+                return NotFound("Record not found.");
+            }
+            return BadRequest(ModelState);
+        }
+
+        [HttpPost]
+        public IActionResult DeleteCheckInOut([FromBody] CheckInOut model)
+        {
+            if (model.Id > 0 )
+            {
+                var record = _context.CheckInOuts.Find(model.Id);
+                if (record != null)
+                {
+                    _context.CheckInOuts.Remove(record);
+                    _context.SaveChanges(); // Save changes to the database
+                    return Ok();
+                }
+                return NotFound("Record not found.");
+            }
+            return BadRequest(ModelState);
+        }
     }
 }

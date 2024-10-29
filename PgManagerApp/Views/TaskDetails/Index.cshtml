@@ -10,12 +10,12 @@
         width: 32%;
         padding: 1rem;
         border-radius: 8px;
-        background: #fff; /* White background for columns */
+        background: #fff;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
     .task-card {
-        background-color: #e0e0e0; /* Light grey background for tasks */
+        background-color: #e0e0e0;
         padding: 1rem;
         border-radius: 8px;
         cursor: pointer;
@@ -31,6 +31,12 @@
     .create-task-btn {
         top: 20px;
         right: 20px;
+    }
+
+    .media-container img,
+    .media-container video {
+        max-width: 100%;
+        margin-top: 10px;
     }
 </style>
 
@@ -48,21 +54,66 @@
             <div class="kanban-header">To Do</div>
             @foreach (var task in Model.Tasks.Where(t => t.Status == "todo"))
             {
-                <div class="task-card" data-id="@task.Id" data-description="@task.TaskDescription" data-status="@task.Status" data-bs-toggle="modal" data-bs-target="#taskDetailsModal">@task.TaskDescription</div>
+                <div class="task-card" data-id="@task.Id"
+                     data-description="@task.TaskDescription"
+                     data-status="@task.Status"
+                     data-priority="@task.Priority"
+                     data-project-name="@task.ProjectId"
+                     data-assigned-by="@task.AssignedBy"
+                     data-assigned-to="@task.AssignedToId"
+                     data-start-date="@task.StartDate.ToString("yyyy-MM-dd")"
+                     data-end-date="@task.EndDate.ToString("yyyy-MM-dd")"
+                     data-comments="@task.Comments"
+                     data-media-description="@task.MediaDescription"
+                     data-upload-image="@task.UploadImage"
+                     data-upload-video="@task.UploadVideo"
+                     data-bs-toggle="modal" data-bs-target="#taskDetailsModal">
+                    @task.TaskDescription
+                </div>
             }
         </div>
         <div class="kanban-column" id="inprogress">
             <div class="kanban-header">In Progress</div>
             @foreach (var task in Model.Tasks.Where(t => t.Status == "inprogress"))
             {
-                <div class="task-card" data-id="@task.Id" data-description="@task.TaskDescription" data-status="@task.Status" data-bs-toggle="modal" data-bs-target="#taskDetailsModal">@task.TaskDescription</div>
+                <div class="task-card" data-id="@task.Id"
+                     data-description="@task.TaskDescription"
+                     data-status="@task.Status"
+                     data-priority="@task.Priority"
+                     data-project-name="@task.ProjectId"
+                     data-assigned-by="@task.AssignedBy"
+                     data-assigned-to="@task.AssignedToId"
+                     data-start-date="@task.StartDate.ToString("yyyy-MM-dd")"
+                     data-end-date="@task.EndDate.ToString("yyyy-MM-dd")"
+                     data-comments="@task.Comments"
+                     data-media-description="@task.MediaDescription"
+                     data-upload-image="@task.UploadImage"
+                     data-upload-video="@task.UploadVideo"
+                     data-bs-toggle="modal" data-bs-target="#taskDetailsModal">
+                    @task.TaskDescription
+                </div>
             }
         </div>
         <div class="kanban-column" id="complete">
             <div class="kanban-header">Complete</div>
             @foreach (var task in Model.Tasks.Where(t => t.Status == "complete"))
             {
-                <div class="task-card" data-id="@task.Id" data-description="@task.TaskDescription" data-status="@task.Status" data-bs-toggle="modal" data-bs-target="#taskDetailsModal">@task.TaskDescription</div>
+                <div class="task-card" data-id="@task.Id"
+                     data-description="@task.TaskDescription"
+                     data-status="@task.Status"
+                     data-priority="@task.Priority"
+                     data-project-name="@task.ProjectId"
+                     data-assigned-by="@task.AssignedBy"
+                     data-assigned-to="@task.AssignedToId"
+                     data-start-date="@task.StartDate.ToString("yyyy-MM-dd")"
+                     data-end-date="@task.EndDate.ToString("yyyy-MM-dd")"
+                     data-comments="@task.Comments"
+                     data-media-description="@task.MediaDescription"
+                     data-upload-image="@task.UploadImage"
+                     data-upload-video="@task.UploadVideo"
+                     data-bs-toggle="modal" data-bs-target="#taskDetailsModal">
+                    @task.TaskDescription
+                </div>
             }
         </div>
     </div>
@@ -98,7 +149,7 @@
                             <option value="" disabled selected>Select a user</option>
                             @foreach (var user in ViewBag.Users)
                             {
-                                <option value="@user.Id">@user.Name (@user.Designation)</option>
+                                <option value="@user.UserId">@user.Name (@user.Designation)</option>
                             }
                         </select>
                     </div>
@@ -167,11 +218,12 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="taskDetailsForm" asp-action="UpdateTask" method="post">
+                <form id="taskDetailsForm" asp-action="UpdateTask" enctype="multipart/form-data" method="post">
                     <input type="hidden" id="taskId" name="Id" />
                     <div class="mb-3">
                         <label for="taskDescription" class="form-label">Task Description</label>
-                        <textarea class="form-control" id="taskDescription" name="TaskDescription" rows="3" required></textarea>
+                        <textarea class="form-control" id="taskDescription" name="TaskDescription" rows="3" required
+                        @(ViewBag.IsEmployee ? "disabled" : "")></textarea>
                     </div>
                     <div class="mb-3">
                         <label for="status" class="form-label">Status</label>
@@ -183,11 +235,53 @@
                     </div>
                     <div class="mb-3">
                         <label for="priority" class="form-label">Priority</label>
-                        <select class="form-select" id="priority" name="Priority" required>
+                        <select class="form-select" id="priority" name="Priority" required
+                        @(ViewBag.IsEmployee ? "disabled" : "")>
                             <option value="high">High</option>
                             <option value="medium">Medium</option>
                             <option value="low">Low</option>
                         </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="assignedBy" class="form-label">Assigned By</label>
+                        <input class="form-control" id="assignedBy" name="assignedBy" required
+                        @(ViewBag.IsEmployee ? "disabled" : "") />
+                    </div>
+                    <div class="mb-3">
+                        <label for="assignedTo" class="form-label">Assigned To</label>
+                        <select class="form-select" id="assignedTo" name="AssignedToId" required @(ViewBag.IsEmployee ? "disabled" : "")>
+                            @foreach (var user in ViewBag.Users)
+                            {
+                                <option value="@user.UserId">@user.Name</option>
+                            }
+                        </select>
+                    </div>
+
+
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label for="startDate" class="form-label">Start Date</label>
+                            <input class="form-control" id="startDate" name="StartDate" required
+                            @(ViewBag.IsEmployee ? "disabled" : "") />
+                        </div>
+                        <div class="col">
+                            <label for="endDate" class="form-label">End Date</label>
+                            <input class="form-control" id="endDate" name="EndDate" required
+                            @(ViewBag.IsEmployee ? "disabled" : "") />
+                        </div>
+                    </div>
+
+                    <div class="mb-3 media-container">
+                        <label class="form-label">Uploaded Image</label>
+                        <div id="uploadedImageContainer">
+                            <span id="uploadedImageLink">No image uploaded</span>
+                        </div>
+                    </div>
+                    <div class="mb-3 media-container">
+                        <label class="form-label">Uploaded Video</label>
+                        <div id="uploadedVideoContainer">
+                            <span id="uploadedVideoLink">No video uploaded</span>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -200,7 +294,6 @@
 </div>
 
 <script>
-    // JavaScript for populating the task details modal
     document.addEventListener('DOMContentLoaded', function () {
         const taskCards = document.querySelectorAll('.task-card');
         taskCards.forEach(card => {
@@ -208,17 +301,51 @@
                 const taskId = this.getAttribute('data-id');
                 const taskDescription = this.getAttribute('data-description');
                 const taskStatus = this.getAttribute('data-status');
+                const taskPriority = this.getAttribute('data-priority') || 'medium';
+                const projectName = this.getAttribute('data-project-name');
+                const assignedBy = this.getAttribute('data-assigned-by');
+                const assignedTo = this.getAttribute('data-assigned-to');
+                const startDate = this.getAttribute('data-start-date');
+                const endDate = this.getAttribute('data-end-date');
+                const comments = this.getAttribute('data-comments');
+                const mediaDescription = this.getAttribute('data-media-description');
+                const uploadedImage = this.getAttribute('data-upload-image');
+                const uploadedVideo = this.getAttribute('data-upload-video');
 
-                // Populate the modal fields
                 document.getElementById('taskId').value = taskId;
                 document.getElementById('taskDescription').value = taskDescription;
                 document.getElementById('status').value = taskStatus;
-
-                // Set priority based on task data if available
-                // Assuming priority is available as data attribute, otherwise set a default
-                const taskPriority = this.getAttribute('data-priority') || 'medium';
                 document.getElementById('priority').value = taskPriority;
+                document.getElementById('assignedBy').value = assignedBy;
+                document.getElementById('startDate').value = startDate;
+                document.getElementById('endDate').value = endDate;
+                document.getElementById('assignedTo').value = assignedTo;
+
+                const imageContainer = document.getElementById('uploadedImageLink');
+                if (uploadedImage) {
+                    imageContainer.innerHTML = `<img src="/uploads/${uploadedImage}" alt="Uploaded Image">`;
+                } else {
+                    imageContainer.textContent = "No image uploaded";
+                }
+
+                const videoContainer = document.getElementById('uploadedVideoLink');
+                if (uploadedVideo) {
+                    videoContainer.innerHTML = `<video controls>
+                                                      <source src="/uploads/${uploadedVideo}" type="video/mp4">
+                                                      Your browser does not support the video tag.
+                                                  </video>`;
+                } else {
+                    videoContainer.textContent = "No video uploaded";
+                }
+
+                var modal = new bootstrap.Modal(document.getElementById('taskDetailsModal'));
+                modal.show();
             });
         });
+    });
+
+    var taskDetailsModal = document.getElementById('taskDetailsModal');
+    taskDetailsModal.addEventListener('hidden.bs.modal', function (event) {
+        location.reload(); // Refresh the page
     });
 </script>

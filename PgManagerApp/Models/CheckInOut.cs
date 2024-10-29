@@ -22,13 +22,19 @@ namespace PgManagerApp.Models
 
         [DataType(DataType.Time)]
         public TimeSpan? CheckOutTime { get; set; } // Check-out time (optional until checked out)
+
+        [NotMapped]
+        public TimeSpan? TotalTime { get; set; }
     }
 
     [NotMapped]
     public class TimeShetViewModel
     {
         public List<CheckInOut>? CheckInOuts { get; set; }
+        public List<UserTimer>? UserTimers { get; set; }
+        public List<UserRegistration>? UserDetails { get; set; }
         public string? TotalTime { get; set; }
+        public bool? IsEmployee { get; set; }
     }
 
     public class UserTimer
@@ -37,7 +43,7 @@ namespace PgManagerApp.Models
         public int Id { get; set; }
 
         [Required]
-        public string? UserId { get; set; } = "EMP01";
+        public string? UserId { get; set; }
 
         [Required]
         public DateTime StartTime { get; set; }

@@ -7,7 +7,7 @@ using System.Text;
 
 namespace PgManagerApp.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "User, Admin")]
     public class ProfileController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -21,41 +21,56 @@ namespace PgManagerApp.Controllers
 
         public IActionResult Index()
         {
-                var admin = new MasterUser();
+            string? userId = HttpContext.Request.Cookies["UserId"];
+            bool isEmployee = false;
+            isEmployee = userId.ToUpper().Contains("EMP");
+            ViewBag.IsEmploye = isEmployee;
 
-                admin = _context.MasterUser.Where(x => x.Id == HttpContext.Session.GetInt32("MasterUserId")).FirstOrDefault();
+            var userData = _context.Users.Where(x => x.UserId == userId).SingleOrDefault() ?? new UserRegistration();
 
-                if (admin != null)
-                {
-                    return View(admin);
-                }
-                else
-                {
-                    return RedirectToAction("Login", "Auth");
-                }
+            if(!isEmployee)
+            {
+                userData.LoginUser = _context.LoginUsers.Where(x => x.UserId == userId).SingleOrDefault();
+            }
+            return View(userData);
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult UpdateMaster(MasterUser model)
+        public IActionResult UpdateProfile(UserRegistration model)
         {
-                if (ModelState.IsValid)
+            try
+            {
+                
+                bool isEmployee = false;
+                string? userId = HttpContext.Request.Cookies["UserId"];
+
+                if (isEmployee)
                 {
+                    isEmployee = model.UserId.ToUpper().Contains("EMP");
+                    ViewBag.IsEmploye = isEmployee;
+                    var user = _context.Users.Where(x => x.UserId == userId).SingleOrDefault();
                     string passHash = HashPassword(model.PasswordHash);
-                    model.PasswordHash = passHash;
-                    var user = _context.MasterUser.Update(model);
+                    user.PasswordHash = passHash;
+                    user.MobileNumber = model.MobileNumber;
+                    user.Email = model.Email;
+                    user.Name = model.Name;
+                    _context.Users.Update(user);
                     _context.SaveChanges();
-                    TempData["Message"] = "Profile updated succesfully.";
-                    _cache.Remove("Username");
-                    _cache.Set("Username", model.Name);
-                    return RedirectToAction("Index");
                 }
                 else
                 {
-                    TempData["Error"] = "Something went wrong!";
+                    var admin = _context.LoginUsers.Where(x => x.UserId == userId).SingleOrDefault();
+                    string passHash = HashPassword(model.PasswordHash);
+                    admin.HashPassword = passHash;
+                    _context.LoginUsers.Update(admin);
+                    _context.SaveChanges();
                 }
-
-                return View(model);
+                TempData["Message"] = "Profile updated succesfully.";
+            }
+            catch (Exception ex) {
+                TempData["Error"] = "Something went wrong!.";
+            }
+            return RedirectToAction("Index");
         }
 
         private string HashPassword(string? password)

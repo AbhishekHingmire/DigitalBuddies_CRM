@@ -1,16 +1,16 @@
-﻿@model PgManagerApp.Models.MasterUser
+﻿@model PgManagerApp.Models.UserRegistration
 
 
 <div class="container-fluid">
     <!-- Page Title and Delete Button -->
-    <div class="d-flex align-items-center justify-content-between mb-4">
+   @*  <div class="d-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Profile Management</h1>
         <form asp-controller="Auth" asp-action="DeleteAccount" method="post">
             <button type="submit" class="btn btn-danger shadow-sm" onclick="return confirm('This action will permanently delete all your data. Do you still want to delete this account?');">
                 <i class="fas fa-trash fa-sm"></i> Delete Profile
             </button>
         </form>
-    </div>
+    </div> *@
 
     <!-- Alert Messages -->
     @{
@@ -40,45 +40,45 @@
     <div class="shadow rounded bg-white mb-4 p-4">
         <div class="row">
             <!-- Profile Image and Basic Info -->
-            <div class="col-md-4 text-center">
-                <div class="profile-emoji rounded-circle d-flex align-items-center justify-content-center">
-                    😊
-                </div>
-                <h5>Emp Id: 12345</h5>
-                <h6 class="text-muted">Developer</h6>
+            @if (ViewBag.IsEmploye)
+            {
+                <div class="col-md-4 text-center">
+                    <img src="~/@Model.ProfilePicturePath" alt="Profile Picture" class="rounded-circle mb-2 border p-1" style="width: 250px; height: 250px;" />
+                               
+                <h6>Emp Id: @Model.UserId</h6>
+                <h6 class="text-muted">Designation: @Model.Designation</h6>
             </div>
+            }
 
             <!-- Profile Details and Edit Form -->
-            <div class="col-md-8">
-                <form asp-action="UpdateMaster" method="post" onsubmit="return disableSubmitButton(this);" novalidate>
-                    <input type="hidden" asp-for="Id" />
+            <div class="col-md-8 m-auto">
+                <form asp-action="UpdateProfile" method="post" onsubmit="return disableSubmitButton(this);" novalidate>
+
+                     @if (ViewBag.IsEmploye)
+            {
+                        <div class="form-group">
+                            <label asp-for="Name" class="font-weight-bold">Name</label>
+                            <input asp-for="Name" class="form-control" placeholder="Enter name" required />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="Email" class="font-weight-bold">Email</label>
+                            <input asp-for="Email" type="email" class="form-control" placeholder="Enter email" required />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="MobileNumber" class="font-weight-bold">Mobile No</label>
+                            <input asp-for="MobileNumber" type="text" class="form-control" placeholder="Enter Mobile Number" required />
+                            <span asp-validation-for="MobileNumber" class="text-danger"></span>
+                        </div>
+                    }
 
                     <div class="form-group">
-                        <label asp-for="Name" class="font-weight-bold">Name</label>
-                        <input asp-for="Name" class="form-control" placeholder="Enter name" />
-                        <span asp-validation-for="Name" class="text-danger"></span>
-                    </div>
-
-                    <div class="form-group">
-                        <label asp-for="Email" class="font-weight-bold">Email</label>
-                        <input asp-for="Email" type="email" class="form-control" placeholder="Enter email" />
-                        <span asp-validation-for="Email" class="text-danger"></span>
-                    </div>
-
-                    <div class="form-group">
-                        <label asp-for="PasswordHash" class="font-weight-bold">Password</label>
-                        <input asp-for="PasswordHash" type="password" class="form-control" placeholder="New Password" />
+                        <label asp-for="PasswordHash" class="font-weight-bold">Reset Password</label>
+                        <input asp-for="PasswordHash" type="password" class="form-control" placeholder="New Password" required />
                         <span asp-validation-for="PasswordHash" class="text-danger"></span>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="font-weight-bold">Emp Address</label>
-                        <input type="text" class="form-control" placeholder="Enter address">
-                    </div>
-
-                    <div class="form-group">
-                        <label class="font-weight-bold">Mobile No</label>
-                        <input type="text" class="form-control" placeholder="Enter mobile number">
                     </div>
 
                     <button type="submit" class="btn btn-info mt-3">
@@ -88,6 +88,8 @@
             </div>
         </div>
     </div>
+
+
 </div>
 <script>
     function disableSubmitButton(form) {

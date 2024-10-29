@@ -43,10 +43,10 @@ namespace PgManagerApp.Models
 
         // File upload properties
         [NotMapped]
-        public IFormFile UploadImageFile { get; set; }
+        public IFormFile? UploadImageFile { get; set; }
 
         [NotMapped]
-        public IFormFile UploadVideoFile { get; set; }
+        public IFormFile? UploadVideoFile { get; set; }
 
         [NotMapped]
         public List<TaskDetails>? Tasks { get; set; }

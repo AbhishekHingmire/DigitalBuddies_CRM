@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace PgManagerApp.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class EmployeeDirectoryController : Controller
     {
         private readonly ApplicationDbContext _context;

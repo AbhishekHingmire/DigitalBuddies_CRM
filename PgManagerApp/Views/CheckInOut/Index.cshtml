@@ -35,6 +35,44 @@
                 <button type="submit" class="btn btn-primary">Add Record</button>
             </form>
             <hr>
+
+
+            <!-- Modal for Editing -->
+            <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editModalLabel">Edit Record</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Form fields for editing -->
+                            <input type="hidden" id="editRecordId">
+                            <div class="mb-3">
+                                <label for="editEmpNameWithDes" class="form-label">Employee Name</label>
+                                <input type="text" class="form-control" id="editEmpNameWithDes" readonly>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editDate" class="form-label">Date</label>
+                                <input type="date" class="form-control" id="editDate">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editCheckInTime" class="form-label">Check In</label>
+                                <input type="time" class="form-control" id="editCheckInTime">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editCheckOutTime" class="form-label">Check Out</label>
+                                <input type="time" class="form-control" id="editCheckOutTime">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" onclick="saveEditedRecord()">Save changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="table-responsive">
                 <table class="table table-bordered mt-3" id="checkInOutTable">
                     <thead>
@@ -48,20 +86,34 @@
                         </tr>
                     </thead>
                     <tbody id="checkInOutData">
-                        @foreach (var data in Model)
+                        @if (Model.Any())
+                        {
+                            foreach (var data in Model)
+                            {
+                                <tr>
+                                    <td>@data.Id</td>
+                                    <td>@data.EmpNameWithDes</td>
+                                    <td>@data.Date.ToString("yyyy-MM-dd")</td> <!-- Format date for better readability -->
+                                    <td>@data.CheckInTime?.ToString(@"hh\:mm")</td> <!-- Format CheckInTime -->
+                                    <td>@data.CheckOutTime?.ToString(@"hh\:mm")</td> <!-- Format CheckOutTime -->
+                                    <td>
+                                        <button class="btn btn-warning btn-sm" onclick="populateForm('@data.Id', '@data.EmpNameWithDes', '@data.Date.ToString("yyyy-MM-dd")', '@data.CheckInTime?.ToString(@"hh\:mm")', '@data.CheckOutTime?.ToString(@"hh\:mm")')">Edit</button>
+                                        <button class="btn btn-danger btn-sm" onclick="deleteRecord('@data.Id', '@data.EmpNameWithDes', '@data.Date.ToString("yyyy-MM-dd")')">Delete</button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
                         {
                             <tr>
-                                <td>@data.Id</td>
-                                <td>@data.EmpNameWithDes</td>
-                                <td>@data.Date</td>
-                                <td>@data.CheckInTime</td>
-                                <td>@data.CheckOutTime</td>
-                                <td> Edit | Delete</td>
+                                <td colspan="6" class="text-start">No data found!</td>
                             </tr>
                         }
                     </tbody>
+
                 </table>
             </div>
+
         </div>
     </div>
 </div>
@@ -85,4 +137,67 @@
         var today = new Date().toISOString().split('T')[0];
         document.getElementById("currentDate").value = today;
     };
+
+    function populateForm(id, empNameWithDes, date, checkInTime, checkOutTime) {
+        // Populate modal fields
+        document.getElementById('editRecordId').value = id;
+        document.getElementById('editEmpNameWithDes').value = empNameWithDes;
+        document.getElementById('editDate').value = date;
+        document.getElementById('editCheckInTime').value = checkInTime;
+        document.getElementById('editCheckOutTime').value = checkOutTime;
+
+        // Show the modal
+        $('#editModal').modal('show');
+    }
+
+    function saveEditedRecord() {
+        const id = document.getElementById('editRecordId').value;
+        const empNameWithDes = document.getElementById('editEmpNameWithDes').value;
+        const date = document.getElementById('editDate').value;
+        const checkInTime = document.getElementById('editCheckInTime').value; // This is already in HH:mm format
+        const checkOutTime = document.getElementById('editCheckOutTime').value; // This is also in HH:mm format
+
+        // Prepare the data object without trying to convert time
+        const updatedData = {
+            Id: id,
+            EmpNameWithDes: empNameWithDes,
+            Date: date,
+            CheckInTime: checkInTime, // Send as a string in HH:mm format
+            CheckOutTime: checkOutTime  // Send as a string in HH:mm format
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: '/CheckInOut/EditCheckInOut',
+            data: JSON.stringify(updatedData),
+            contentType: 'application/json',
+            success: function () {
+                alert('Record updated successfully.');
+                $('#editModal').modal('hide'); // Hide the modal
+                location.reload(); // Reload the page to reflect changes
+            },
+            error: function (xhr, status, error) {
+                alert('Error updating record: ' + xhr.responseText);
+            }
+        });
+    }
+
+
+    function deleteRecord(id, empNameWithDes, date) {
+        if (confirm(`Are you sure you want to delete the record for ${empNameWithDes} on ${date}?`)) {
+            $.ajax({
+                type: 'POST',
+                url: '/CheckInOut/DeleteCheckInOut', // Adjust URL for your Delete action
+                data: JSON.stringify({ Id: id }),
+                contentType: 'application/json',
+                success: function () {
+                    alert('Record deleted successfully.');
+                    location.reload(); // Reload the page to reflect changes
+                },
+                error: function (xhr, status, error) {
+                    alert('Error deleting record: ' + xhr.responseText);
+                }
+            });
+        }
+    }
 </script>

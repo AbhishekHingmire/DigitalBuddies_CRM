@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PgManagerApp.Models;
 
 namespace PgManagerApp.Controllers
 {
+    [Authorize(Roles = "Admin, User")]
     public class TaskDetailsController : Controller
     {
         private readonly ApplicationDbContext _context;// Update with your actual DbContext
@@ -14,8 +16,14 @@ namespace PgManagerApp.Controllers
 
         public IActionResult Index()
         {
+            string? userId = HttpContext.Request.Cookies["UserId"];
+            bool isEmployee = false;
+            isEmployee = userId.ToUpper().Contains("EMP");
+
+            ViewBag.IsEmployee = isEmployee;
+
             TaskDetails model = new TaskDetails();
-            model.Tasks = _context.TaskDetails.ToList();
+            model.Tasks = isEmployee ? _context.TaskDetails.Where(x => x.AssignedToId == userId).ToList() : _context.TaskDetails.ToList();
 
             var users = _context.Users.ToList(); // Get users from the database
             ViewBag.Users = users; // Pass users to the view
@@ -65,9 +73,11 @@ namespace PgManagerApp.Controllers
         {
             var taskDetails = _context.TaskDetails.Find(taskModel.Id);
 
-            taskDetails.TaskDescription = taskModel.TaskDescription;
             taskDetails.Status = taskModel.Status;
-            taskDetails.Priority = taskModel.Priority;
+            if (taskModel.AssignedToId != null)
+            {
+                taskDetails.AssignedToId = taskModel.AssignedToId;
+            }
 
             _context.TaskDetails.Update(taskDetails);
             _context.SaveChanges();

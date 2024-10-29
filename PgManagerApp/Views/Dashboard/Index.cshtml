@@ -183,7 +183,7 @@
                             <div class="text-xs  text-success text-uppercase mb-1">
                                 Holiday List
                             </div>
-                            <div class="h5 mb-0  text-gray-800">@Model.EventList</div>
+                            <div class="h5 mb-0  text-gray-800">@Model.TotalHolidays</div>
                         </div>
                         <div class="col-auto">
                                 <i class="fas fa-calendar fa-2x ml-2 text-secondary"></i>
@@ -192,29 +192,31 @@
                 </div>
             </div>
         </div>
-            <!-- First Card: Create Designation -->
-            <div class="col-xl-4 col-md-6 col-sm-12 mt-3">
-                <div class="card border-left-primary shadow h-100 py-4">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-3">
-                                <div class="text-xs  text-primary text-uppercase mb-3">
-                                    Create Designation
-                                </div>
-                                 <form asp-action="AddDesignation" method="post">
-                                    <input type="text" class="form-control h5  text-gray-800 mb-3" name="designationName" placeholder="Enter Designation Name" required>
-                                <button class="btn btn-primary w-100">Add</button>
-                                </form>
+            @if(!Model.IsEmployee == true)
+            {
+                <!-- First Card: Create Designation -->
+                <div class="col-xl-4 col-md-6 col-sm-12 mt-3">
+                    <div class="card border-left-primary shadow h-100 py-4">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-3">
+                                    <div class="text-xs  text-primary text-uppercase mb-3">
+                                        Create Designation
+                                    </div>
+                                    <form asp-action="AddDesignation" method="post">
+                                        <input type="text" class="form-control h5  text-gray-800 mb-3" name="designationName" placeholder="Enter Designation Name" required>
+                                        <button class="btn btn-primary w-100">Add</button>
+                                    </form>
 
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Second Card: Create Projects -->
-            <div class="col-xl-4 col-md-6 col-sm-12 mt-3">
-                <div class="card border-left-warning shadow h-100 py-4">
+                <!-- Second Card: Create Projects -->
+                <div class="col-xl-4 col-md-6 col-sm-12 mt-3">
+                    <div class="card border-left-warning shadow h-100 py-4">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-3">
@@ -230,126 +232,141 @@
                     </div>
                 </div>
             </div>
+            }
 
     </div>
-        <div class="container-fluid mt-5">
-            <div class="row justify-content-start">
-                <!-- Timer Card -->
-                <div class="col-md-4 mt-2">
-                    <div class="card timer-card">
-                        <div class="card-body text-center">
-                            <h4 class="text-success mb-3" style="font-weight: bold; color: #007bff;">Timer</h4>
-                            <div class="timer" id="timer">00:00:00</div>
-                            <button class="btn btn-custom" id="startBtn">Start</button>
-                            <button class="btn btn-danger" id="endBtn">End</button>
-                            <div id="totalTime" class="mt-3"></div>
-                            <div id="checkInOut" class="mt-3"></div>
+        @if (Model.IsEmployee == true)
+        {
+            <div class="container-fluid mt-5">
+                <div class="row justify-content-start">
+
+                    <!-- Timer Card -->
+                    <div class="col-md-4 mt-2">
+                        @if (Model.IsCheckedIn == true)
+                        {
+                            <div class="card timer-card" style="cursor: pointer;" onclick="handleTimerClick()">
+                                <div class="card-body text-center">
+                                    <h4 class="text-success mb-3" style="font-weight: bold; color: #007bff;">Timer</h4>
+                                    <div class="timer" id="timer">00:00:00</div>
+                                    <button class="btn btn-custom" id="startBtn">Start</button>
+                                    <button class="btn btn-danger" id="endBtn">End</button>
+                                    <div id="totalTime" class="mt-3"></div>
+                                    <div id="checkInOut" class="mt-3"></div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="card timer-card" style="cursor: not-allowed;">
+                                <div class="card-body text-center">
+                                    <h4 class="text-muted mb-3" style="font-weight: bold;">Timer (Inactive)</h4>
+                                    <div class="timer" id="timer">00:00:00</div>
+                                    <button class="btn btn-custom" id="startBtn" disabled>Start</button>
+                                    <button class="btn btn-danger" id="endBtn" disabled>End</button>
+                                    <div id="totalTime" class="mt-3"></div>
+                                    <div id="checkInOut" class="mt-3"></div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Employee Table Card -->
+                    <div class="table-responsive col-md-8 mt-2 pt-2 shadow" style="max-height: 400px;">
+                        <table class="table table-bordered table-striped">
+                            @if (Model.Users != null && Model.Users.Any())
+                            {
+                                <thead>
+                                    <tr>
+                                        <th class="bg-primary text-white">Emp ID</th>
+                                        <th class="bg-primary text-white">Emp Name</th>
+                                        <th class="bg-primary text-white">Emp Designation</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="employeeTableBody">
+                                    @foreach (var emp in Model.Users)
+                                    {
+                                        <tr>
+                                            <td>@emp.UserId</td>
+                                            <td>@emp.Name</td>
+                                            <td>@emp.Designation</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            }
+                            else
+                            {
+                                <tbody>
+                                    <tr>
+                                        <td colspan="3" class="text-center"><strong>No data to show!</strong></td>
+                                    </tr>
+                                </tbody>
+                            }
+                        </table>
+                    </div>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="logoutModalLabel">Session Logout</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Do you want to logout this session?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="button" class="btn btn-danger" id="confirmLogout">Logout</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Employee Table Card -->
-
-                            <div class="table-responsive col-md-8 mt-2 pt-2 shadow" style="max-height: 400px;">
-                                <!-- Set the max-height for scrolling -->
-                                <table class="table table-bordered table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th class="bg-primary text-white">Emp ID</th>
-                                            <th class="bg-primary text-white">Emp Name</th>
-                                            <th class="bg-primary text-white">Emp Designation</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="employeeTableBody">
-                                        <!-- Sample Data -->
-                                        <tr>
-                                            <td>101</td>
-                                            <td>John Doe</td>
-                                            <td>Developer</td>
-                                        </tr>
-                                        <tr>
-                                            <td>102</td>
-                                            <td>Jane Smith</td>
-                                            <td>Designer</td>
-                                        </tr>
-                                        <tr>
-                                            <td>103</td>
-                                            <td>Michael Johnson</td>
-                                            <td>Manager</td>
-                                        </tr>
-                                        <tr>
-                                            <td>104</td>
-                                            <td>Emily Davis</td>
-                                            <td>Analyst</td>
-                                        </tr>
-                                        <tr>
-                                            <td>105</td>
-                                            <td>Robert Brown</td>
-                                            <td>Tester</td>
-                                        </tr>
-                                        <tr>
-                                            <td>106</td>
-                                            <td>Linda Wilson</td>
-                                            <td>HR</td>
-                                        </tr>
-                                        <!-- More entries will go here -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        
-
-
-                <!-- Modal -->
-                <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="logoutModalLabel">Session Logout</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                Do you want to logout this session?
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                <button type="button" class="btn btn-danger" id="confirmLogout">Logout</button>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
-        </div>
 
+        }
 
 </div>
 <!-- End Page Content -->
 
-<script>
+    <script>
         let timerInterval;
         let startTime;
         let endTime;
 
+        // Function to get the current time in IST
+        function getISTTime() {
+            const utcDate = new Date();
+            // Calculate the offset for IST (UTC+5:30)
+            const istOffset = 5.5 * 60 * 60 * 1000; // 5 hours and 30 minutes in milliseconds
+            return new Date(utcDate.getTime() + istOffset);
+        }
+
         $('#startBtn').click(function () {
-            startTime = new Date();
+            startTime = getISTTime(); // Get current time in IST
             $('#timer').text("00:00:00"); // Reset timer display
             $('#checkInOut').text("Timer started...");
 
             timerInterval = setInterval(function () {
-                const elapsedTime = new Date() - startTime;
+                const elapsedTime = getISTTime() - startTime; // Calculate elapsed time in IST
                 const seconds = Math.floor((elapsedTime / 1000) % 60);
                 const minutes = Math.floor((elapsedTime / 60000) % 60);
                 const hours = Math.floor((elapsedTime / 3600000));
+
+                // Format the timer display as HH:mm:ss
                 $('#timer').text(`${pad(hours)}:${pad(minutes)}:${pad(seconds)}`);
             }, 1000);
         });
 
         $('#endBtn').click(function () {
             clearInterval(timerInterval);
-            endTime = new Date();
+            endTime = getISTTime(); // Get end time in IST
             $('#checkInOut').text("Timer stopped...");
 
             const userTimerData = {
-                UserId: "YourUserId", // Replace with actual user ID
+                UserId: '@Model.UserId', // Replace with actual user ID
                 StartTime: startTime.toISOString(),
                 EndTime: endTime.toISOString()
             };
@@ -361,7 +378,9 @@
                 contentType: 'application/json',
                 success: function () {
                     alert('Timer data saved successfully.');
-                    $('#totalTime').text(`Total Time: ${Math.floor((endTime - startTime) / 1000)} seconds`);
+                    // Calculate total elapsed time for display
+                    const totalTime = Math.floor((endTime - startTime) / 1000);
+                    $('#totalTime').text(`Total Time: ${pad(Math.floor(totalTime / 3600))}:${pad(Math.floor((totalTime % 3600) / 60))}:${pad(totalTime % 60)}`);
                 },
                 error: function (xhr, status, error) {
                     alert('Error saving timer: ' + xhr.responseText);
@@ -372,5 +391,4 @@
         function pad(number) {
             return number < 10 ? '0' + number : number;
         }
-
-</script>
+    </script>

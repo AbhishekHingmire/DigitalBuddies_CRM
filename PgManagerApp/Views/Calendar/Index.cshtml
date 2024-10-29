@@ -1,4 +1,14 @@
 ﻿@model IEnumerable<PgManagerApp.Models.CalendarEvent>
+
+@{
+    string userId = Context.Request.Cookies["UserId"];
+    bool isEmployee = false;
+
+    if (userId != null)
+    {
+        isEmployee = userId.ToUpper().Contains("EMP");
+    }
+}
 <div class="container mt-5 mb-3">
     <h2 class="text-center" id="currentMonth"></h2>
     <div class="container-fluid">
@@ -24,32 +34,35 @@
 </div>
 
 <!-- Modal for Adding/Updating Events -->
-<div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="eventModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="eventModalLabel">Add Event</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="eventForm">
-                    <div class="form-group">
-                        <label for="eventTitle">Event Title</label>
-                        <input type="text" class="form-control" id="eventTitle" required>
-                    </div>
-                    <input type="hidden" id="eventDate">
-                    <input type="hidden" id="eventId">
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" id="deleteEvent" style="display: none;">Delete Event</button>
-                <button type="button" class="btn btn-primary" id="saveEvent">Save Event</button>
+@if (!isEmployee)
+{
+    <div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="eventModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="eventModalLabel">Add Event</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="eventForm">
+                        <div class="form-group">
+                            <label for="eventTitle">Event Title</label>
+                            <input type="text" class="form-control" id="eventTitle" required>
+                        </div>
+                        <input type="hidden" id="eventDate">
+                        <input type="hidden" id="eventId">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" id="deleteEvent" style="display: none;">Delete Event</button>
+                    <button type="button" class="btn btn-primary" id="saveEvent">Save Event</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
+}
 
 <!-- Include jQuery, Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
